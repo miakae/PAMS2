@@ -5,10 +5,7 @@ import mysql.connector
 from mysql.connector import errorcode
 
 from dbSecrets import *
-from PySide6.QtWidgets import *
-from PySide6.QtGui import *
-from PySide6.QtCore import * 
-from PySide6.QtSql import *
+
 from ErrorBoxes import ErrorMessage
 
 isUsingDev = True
@@ -60,6 +57,7 @@ def GetTenants():
 
     conn.close()
     dbcursor.close()
+    print("Closed Database")
     return records
 
 def GetLocations():
@@ -77,6 +75,7 @@ def GetLocations():
 
     conn.close()
     dbcursor.close()
+    print("Closed Database")
     return records
 
 # Gets all the headers from a table in the database
@@ -91,6 +90,7 @@ def GetHeaders(table : str):
     headers = dbcursor.fetchall()
     dbcursor.close()
     conn.close()
+    print("Closed Database")
     return headers
 
 def CheckEmailIsValid(email : str):
@@ -117,8 +117,43 @@ def CheckEmailIsValid(email : str):
         print("Database Closed")
         return None
 
-def SignUpUser():
-    pass
+#This assumes that the email has already been checked
+def SignUpUser(fName : str, lName : str, email : str, password : str, NINumber : str, phoneNum : int, job: str):
+    #TODO do SQL injection protection
+    query = "INSERT INTO tenants (first_name,last_name,national_insurance, email,password,phone_number,occupation) VALUES (%s,%s,%s,%s,%s,%s,%s);"
+    conn = GetConnection()
 
+    dbcursor = conn.cursor()    #Creating cursor object
+    dbcursor.execute('USE {};'.format(devName)) #use database'
+    print("Entered Database")   
+    dbcursor.execute(query, (fName,lName,NINumber,email,password,phoneNum,job,))
+    conn.commit()
+
+
+    conn.close()
+    dbcursor.close()
+    print("Closed Database")
+    return None
 def LoginUser(email : str, hashedPassword : str):
-    pass
+    query = "SELECT * FROM tenants WHERE email = %s AND password =%s"
+    conn = GetConnection()
+
+    dbcursor = conn.cursor()    #Creating cursor object
+    dbcursor.execute('USE {};'.format(devName)) #use database'
+    print("Entered Database")   
+    dbcursor.execute(query, (email, password ,))
+    tenant = dbcursor.fetchone()
+    if tenant is None:
+        dbcursor.close()
+        conn.close()
+        print("Database Closed")
+        title = "Failure To Login"
+        description = "No user matches the credentials provided."
+        error = ErrorMessage(title, description)
+        return (error)
+    else:
+        dbcursor.close()
+        conn.close()
+        print("Database Closed")
+        return None
+

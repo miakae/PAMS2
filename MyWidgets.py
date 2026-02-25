@@ -443,7 +443,7 @@ class Dashboard(QWidget):
 #region Database Widgets
 
 
-class Table(QTableWidget):
+class Table(QTableWidget):  
     def __init__(self, records, headers):
         super().__init__()
         print(len(headers))
@@ -648,58 +648,61 @@ class FrontDeskDashboard(QWidget):
         self.resize(831, 581)
         self.title = QLabel(self)
         self.title.setObjectName(u"title")
-        self.title.setGeometry(QRect(330, 30, 118, 16))
-        self.registerTenants = QGroupBox(self)
-        self.registerTenants.setObjectName(u"registerTenants")
-        self.registerTenants.setGeometry(QRect(10, 50, 731, 241))
-        self.firstNameInput = QLineEdit(self.registerTenants)
-        self.firstNameInput.setObjectName(u"firstNameInput")
-        self.firstNameInput.setGeometry(QRect(20, 40, 113, 21))
-        self.lastNameInput = QLineEdit(self.registerTenants)
-        self.lastNameInput.setObjectName(u"lastNameInput")
-        self.lastNameInput.setGeometry(QRect(20, 130, 113, 21))
-        self.emailInput = QLineEdit(self.registerTenants)
-        self.emailInput.setObjectName(u"emailInput")
-        self.emailInput.setGeometry(QRect(20, 200, 113, 21))
-        self.nationalInsuranceInput = QLineEdit(self.registerTenants)
-        self.nationalInsuranceInput.setObjectName(u"nationalInsuranceInput")
-        self.nationalInsuranceInput.setGeometry(QRect(270, 40, 161, 21))
-        self.phoneNumberInput = QLineEdit(self.registerTenants)
-        self.phoneNumberInput.setObjectName(u"phoneNumberInput")
-        self.phoneNumberInput.setGeometry(QRect(270, 130, 161, 21))
-        self.occupationDropdown = QComboBox(self.registerTenants)
-        self.occupationDropdown.addItem("")
-        self.occupationDropdown.addItem("")
-        self.occupationDropdown.addItem("")
-        self.occupationDropdown.addItem("")
-        self.occupationDropdown.setObjectName(u"occupationDropdown")
-        self.occupationDropdown.setGeometry(QRect(260, 200, 171, 26))
-        self.submitButton = QPushButton(self.registerTenants)
-        self.submitButton.setObjectName(u"submitButton")
-        self.submitButton.setGeometry(QRect(560, 40, 81, 26))
-        self.errorMessage = QWidget(self.registerTenants)
-        self.errorMessage.setObjectName(u"errorMessage")
-        self.errorMessage.setGeometry(QRect(480, 80, 231, 141))
+        self.title.setGeometry(QRect(350, 20, 118, 16))
         self.manageTenants = QGroupBox(self)
         self.manageTenants.setObjectName(u"manageTenants")
-        self.manageTenants.setGeometry(QRect(10, 320, 731, 241))
+        self.manageTenants.setGeometry(QRect(40, 320, 731, 241))
         self.errorMessage_2 = QWidget(self.manageTenants)
         self.errorMessage_2.setObjectName(u"errorMessage_2")
         self.errorMessage_2.setGeometry(QRect(480, 80, 231, 141))
         self.tenantTable = QTableWidget(self.manageTenants)
         self.tenantTable.setObjectName(u"tenantTable")
         self.tenantTable.setGeometry(QRect(10, 30, 711, 201))
-        self.tenantTable.setMaximumSize(10, 30)
         self.searchBar = QLineEdit(self.manageTenants)
         self.searchBar.setObjectName(u"searchBar")
         self.searchBar.setGeometry(QRect(610, 10, 113, 22))
+        self.registerTenants = QGroupBox(self)
+        self.registerTenants.setObjectName(u"registerTenants")
+        self.registerTenants.setGeometry(QRect(40, 50, 731, 241))
+        self.firstNameInput = QLineEdit(self.registerTenants)
+        self.firstNameInput.setObjectName(u"firstNameInput")
+        self.firstNameInput.setGeometry(QRect(20, 40, 113, 21))
+        self.lastNameInput = QLineEdit(self.registerTenants)
+        self.lastNameInput.setObjectName(u"lastNameInput")
+        self.lastNameInput.setGeometry(QRect(20, 80, 113, 21))
+        self.emailInput = QLineEdit(self.registerTenants)
+        self.emailInput.setObjectName(u"emailInput")
+        self.emailInput.setGeometry(QRect(20, 120, 113, 21))
+        self.nationalInsuranceInput = QLineEdit(self.registerTenants)
+        self.nationalInsuranceInput.setObjectName(u"nationalInsuranceInput")
+        self.nationalInsuranceInput.setGeometry(QRect(410, 50, 161, 21))
+        self.phoneNumberInput = QLineEdit(self.registerTenants)
+        self.phoneNumberInput.setObjectName(u"phoneNumberInput")
+        self.phoneNumberInput.setGeometry(QRect(410, 110, 161, 21))
+        self.occupationDropdown = QComboBox(self.registerTenants)
+        self.occupationDropdown.addItem("")
+        self.occupationDropdown.addItem("")
+        self.occupationDropdown.addItem("")
+        self.occupationDropdown.addItem("")
+        self.occupationDropdown.setObjectName(u"occupationDropdown")
+        self.occupationDropdown.setGeometry(QRect(410, 170, 171, 26))
+        self.submitButton = QPushButton(self.registerTenants)
+        self.submitButton.setObjectName(u"submitButton")
+        self.submitButton.setGeometry(QRect(600, 200, 81, 26))
+        self.passwordInput = QLineEdit(self.registerTenants)
+        self.passwordInput.setObjectName(u"passwordInput")
+        self.passwordInput.setGeometry(QRect(20, 170, 113, 21))
 
+        self.retranslateUi()
 
+        QMetaObject.connectSlotsByName(self)
     # setupUi
 
     def retranslateUi(self):
         self.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
         self.title.setText(QCoreApplication.translate("Form", u"Front Desk Dashboard", None))
+        self.manageTenants.setTitle(QCoreApplication.translate("Form", u"Manage Tenants", None))
+        self.searchBar.setPlaceholderText(QCoreApplication.translate("Form", u"Search", None))
         self.registerTenants.setTitle(QCoreApplication.translate("Form", u"Register Tenants", None))
         self.firstNameInput.setPlaceholderText(QCoreApplication.translate("Form", u"First Name", None))
         self.lastNameInput.setText("")
@@ -712,13 +715,13 @@ class FrontDeskDashboard(QWidget):
         self.phoneNumberInput.setPlaceholderText(QCoreApplication.translate("Form", u"Phone Number", None))
         self.occupationDropdown.setItemText(0, QCoreApplication.translate("Form", u"Student", None))
         self.occupationDropdown.setItemText(1, QCoreApplication.translate("Form", u"Unemployed", None))
-        self.occupationDropdown.setItemText(2, QCoreApplication.translate("Form", u"Full-Time Employed", None))
-        self.occupationDropdown.setItemText(3, QCoreApplication.translate("Form", u"Part-Time Employed", None))
+        self.occupationDropdown.setItemText(2, QCoreApplication.translate("Form", u"Employed", None))
+        self.occupationDropdown.setItemText(3, QCoreApplication.translate("Form", u"Part-Time", None))
 
         self.occupationDropdown.setPlaceholderText(QCoreApplication.translate("Form", u"Occupation", None))
         self.submitButton.setText(QCoreApplication.translate("Form", u"Submit", None))
-        self.manageTenants.setTitle(QCoreApplication.translate("Form", u"Manage Tenants", None))
-        self.searchBar.setPlaceholderText(QCoreApplication.translate("Form", u"Search", None))
+        self.passwordInput.setText("")
+        self.passwordInput.setPlaceholderText(QCoreApplication.translate("Form", u"Password", None))
     # retranslateUi
 
     def UpdateTenants(self, records, headers):
@@ -726,8 +729,137 @@ class FrontDeskDashboard(QWidget):
         self.tenantTable.setParent(self.manageTenants)
         self.tenantTable.setObjectName(u"tenantTable")
         self.tenantTable.setGeometry(QRect(10, 30, 711, 201))
+        self.searchBar = QLineEdit(self.manageTenants)
+        self.searchBar.setObjectName(u"searchBar")
+        self.searchBar.setGeometry(QRect(610, 10, 113, 22))
         
-
-
+    def Submit(self):
+        fName = self.firstNameInput.text()
+        lName = self.lastNameInput.text()
+        email = self.emailInput.text()
+        password = self.passwordInput.text()
+        phoneNumber = self.phoneNumberInput.text() #TODO phonenumber checking is valid phone number
+        nationalInsurance = self.nationalInsuranceInput.text()
+        occupation = self.occupationDropdown.currentText()
+        self.firstNameInput.clear()
+        self.lastNameInput.clear()
+        self.emailInput.clear()
+        self.passwordInput.clear()
+        self.phoneNumberInput.clear()
+        self.nationalInsuranceInput.clear()
+        self.occupationDropdown.setCurrentIndex(0)
+        return fName,lName,email,password,phoneNumber,nationalInsurance,occupation
 
 #endregion
+
+
+
+# -*- coding: utf-8 -*-
+
+################################################################################
+## Form generated from reading UI file 'dashboardSRWSBF.ui'
+##
+## Created by: Qt User Interface Compiler version 6.10.1
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
+
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QGridLayout, QLabel, QPushButton,
+    QSizePolicy, QStackedWidget, QWidget)
+
+class Ui_dashboard(QWidget):
+    def __init__(self, /, parent = ..., f = ..., *, modal = ..., windowModality = ..., enabled = ..., geometry = ..., frameGeometry = ..., normalGeometry = ..., x = ..., y = ..., pos = ..., frameSize = ..., size = ..., width = ..., height = ..., rect = ..., childrenRect = ..., childrenRegion = ..., sizePolicy = ..., minimumSize = ..., maximumSize = ..., minimumWidth = ..., minimumHeight = ..., maximumWidth = ..., maximumHeight = ..., sizeIncrement = ..., baseSize = ..., palette = ..., font = ..., cursor = ..., mouseTracking = ..., tabletTracking = ..., isActiveWindow = ..., focusPolicy = ..., focus = ..., contextMenuPolicy = ..., updatesEnabled = ..., visible = ..., minimized = ..., maximized = ..., fullScreen = ..., sizeHint = ..., minimumSizeHint = ..., acceptDrops = ..., windowTitle = ..., windowIcon = ..., windowIconText = ..., windowOpacity = ..., windowModified = ..., toolTip = ..., toolTipDuration = ..., statusTip = ..., whatsThis = ..., accessibleName = ..., accessibleDescription = ..., accessibleIdentifier = ..., layoutDirection = ..., autoFillBackground = ..., styleSheet = ..., locale = ..., windowFilePath = ..., inputMethodHints = ...):
+        super().__init__(parent, f, modal=modal, windowModality=windowModality, enabled=enabled, geometry=geometry, frameGeometry=frameGeometry, normalGeometry=normalGeometry, x=x, y=y, pos=pos, frameSize=frameSize, size=size, width=width, height=height, rect=rect, childrenRect=childrenRect, childrenRegion=childrenRegion, sizePolicy=sizePolicy, minimumSize=minimumSize, maximumSize=maximumSize, minimumWidth=minimumWidth, minimumHeight=minimumHeight, maximumWidth=maximumWidth, maximumHeight=maximumHeight, sizeIncrement=sizeIncrement, baseSize=baseSize, palette=palette, font=font, cursor=cursor, mouseTracking=mouseTracking, tabletTracking=tabletTracking, isActiveWindow=isActiveWindow, focusPolicy=focusPolicy, focus=focus, contextMenuPolicy=contextMenuPolicy, updatesEnabled=updatesEnabled, visible=visible, minimized=minimized, maximized=maximized, fullScreen=fullScreen, sizeHint=sizeHint, minimumSizeHint=minimumSizeHint, acceptDrops=acceptDrops, windowTitle=windowTitle, windowIcon=windowIcon, windowIconText=windowIconText, windowOpacity=windowOpacity, windowModified=windowModified, toolTip=toolTip, toolTipDuration=toolTipDuration, statusTip=statusTip, whatsThis=whatsThis, accessibleName=accessibleName, accessibleDescription=accessibleDescription, accessibleIdentifier=accessibleIdentifier, layoutDirection=layoutDirection, autoFillBackground=autoFillBackground, styleSheet=styleSheet, locale=locale, windowFilePath=windowFilePath, inputMethodHints=inputMethodHints)
+        self.resize(805, 581)
+        self.sideBar = QWidget(self)
+        self.sideBar.setObjectName(u"sideBar")
+        self.sideBar.setGeometry(QRect(10, 10, 91, 561))
+        self.gridLayout = QGridLayout(self.sideBar)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.leaseBtn = QPushButton(self.sideBar)
+        self.leaseBtn.setObjectName(u"leaseBtn")
+        self.leaseBtn.setCheckable(True)
+        self.leaseBtn.setAutoExclusive(True)
+
+        self.gridLayout.addWidget(self.leaseBtn, 1, 0, 1, 1)
+
+        self.paymentsBtn = QPushButton(self.sideBar)
+        self.paymentsBtn.setObjectName(u"paymentsBtn")
+        self.paymentsBtn.setCheckable(True)
+        self.paymentsBtn.setAutoExclusive(True)
+
+        self.gridLayout.addWidget(self.paymentsBtn, 2, 0, 1, 1)
+
+        self.accountBtn = QPushButton(self.sideBar)
+        self.accountBtn.setObjectName(u"accountBtn")
+        self.accountBtn.setCheckable(True)
+        self.accountBtn.setAutoExclusive(True)
+
+        self.gridLayout.addWidget(self.accountBtn, 0, 0, 1, 1)
+
+        self.complaintsBtn = QPushButton(self.sideBar)
+        self.complaintsBtn.setObjectName(u"complaintsBtn")
+        self.complaintsBtn.setCheckable(True)
+        self.complaintsBtn.setAutoExclusive(True)
+
+        self.gridLayout.addWidget(self.complaintsBtn, 3, 0, 1, 1)
+
+        self.stackedWidget = QStackedWidget(self)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.stackedWidget.setGeometry(QRect(110, 70, 681, 501))
+        self.accountPage = QWidget()
+        self.accountPage.setObjectName(u"accountPage")
+        self.label_2 = QLabel(self.accountPage)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setGeometry(QRect(270, 220, 44, 16))
+        self.stackedWidget.addWidget(self.accountPage)
+        self.leasePage = QWidget()
+        self.leasePage.setObjectName(u"leasePage")
+        self.label_3 = QLabel(self.leasePage)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setGeometry(QRect(250, 250, 30, 16))
+        self.stackedWidget.addWidget(self.leasePage)
+        self.paymentPage = QWidget()
+        self.paymentPage.setObjectName(u"paymentPage")
+        self.label_4 = QLabel(self.paymentPage)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setGeometry(QRect(280, 240, 52, 16))
+        self.stackedWidget.addWidget(self.paymentPage)
+        self.complaintsPage = QWidget()
+        self.complaintsPage.setObjectName(u"complaintsPage")
+        self.label = QLabel(self.complaintsPage)
+        self.label.setObjectName(u"label")
+        self.label.setGeometry(QRect(270, 190, 58, 16))
+        self.stackedWidget.addWidget(self.complaintsPage)
+        self.pushButton = QPushButton(self)
+        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setGeometry(QRect(450, 30, 81, 26))
+
+        self.retranslateUi(self)
+
+        self.stackedWidget.setCurrentIndex(0)
+
+
+        QMetaObject.connectSlotsByName(self)
+    # setupUi
+
+    def retranslateUi(self):
+        self.setWindowTitle(QCoreApplication.translate("dashboard", u"Form", None))
+        self.leaseBtn.setText(QCoreApplication.translate("dashboard", u"Lease", None))
+        self.paymentsBtn.setText(QCoreApplication.translate("dashboard", u"Payments", None))
+        self.accountBtn.setText(QCoreApplication.translate("dashboard", u"Account", None))
+        self.complaintsBtn.setText(QCoreApplication.translate("dashboard", u"Complaints", None))
+        self.label_2.setText(QCoreApplication.translate("dashboard", u"Account", None))
+        self.label_3.setText(QCoreApplication.translate("dashboard", u"Lease", None))
+        self.label_4.setText(QCoreApplication.translate("dashboard", u"payments", None))
+        self.label.setText(QCoreApplication.translate("dashboard", u"complaints", None))
+        self.pushButton.setText(QCoreApplication.translate("dashboard", u"PushButton", None))
+    # retranslateUi
+
