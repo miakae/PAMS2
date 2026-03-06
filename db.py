@@ -42,6 +42,50 @@ def GetConnection():
             return conn
 
 
+def GetLocation(locationName: str):
+    query = "SELECT * FROM locations WHERE locations.location_name = %s;"
+
+    conn = GetConnection()    
+    
+    dbcursor = conn.cursor()    #Creating cursor object
+    dbcursor.execute('USE {};'.format(devName)) #use database'
+    print("Entered Database") 
+
+    dbcursor.execute(query, (locationName,))
+    location = dbcursor.fetchone()
+    if(location is None):
+        dbcursor.close()
+        conn.close()
+        print("Database Closed")
+        return None
+    else:
+        dbcursor.close()
+        conn.close()
+        print("Database Closed")
+        return location
+
+def GetApartmentsFromLocation(Id : str):
+    query2 = "SELECT * from apartments WHERE location_id = %s"
+    
+    conn = GetConnection()
+    dbcursor = conn.cursor()    #Creating cursor object
+    dbcursor.execute('USE {};'.format(devName)) #use database'
+    print("Entered Database") 
+    
+    dbcursor.execute(query2, (Id,))
+    apartments = dbcursor.fetchall()
+
+    dbcursor.close()
+    conn.close()
+    print("Database Closed")
+
+    if apartments is None:
+        return None
+    else: 
+        return apartments
+
+
+
 def GetTenants():
 
     query = "SELECT * FROM tenants"
@@ -156,4 +200,55 @@ def LoginUser(email : str, hashedPassword : str):
         conn.close()
         print("Database Closed")
         return None
+
+# Returns the ids of the unoccupied apartments in a location matching the locationName value.
+def GetUnoccupiedApartmentsForLocation(locationName : str):
+    query = "SELECT apartments.apartment_id from apartments WHERE location_id = %s AND occupancy_status = 0;"
+
+    location = GetLocation(locationName)
+    if location == None:
+        return None
+    else:
+        conn = GetConnection()
+        dbcursor = conn.cursor()    #Creating cursor object
+        dbcursor.execute('USE {};'.format(devName)) #use database'
+        print("Entered Database") 
+
+        dbcursor.execute(query, (location[0],))
+        unoccupiedApartments = dbcursor.fetchall()
+
+        return unoccupiedApartments
+
+# def GetPaymentInsights(locationName : str):
+#     query = "SELECT locations.location_id FROM locations WHERE locations.location_name = %s;"
+#     query2 = "SELECT "
+#     conn = GetConnection()
+
+#     dbcursor = conn.cursor()    #Creating cursor object
+#     dbcursor.execute('USE {};'.format(devName)) #use database'
+#     print("Entered Database") 
+#     dbcursor.execute(query, (locationName,))
+#     id = dbcursor.fetchone()
+#     if(id is None):
+#         dbcursor.close()
+#         conn.close()
+#         print("Database Closed")
+#         return ErrorMessage("No Data", "There is no location by this name")
+#     else:
+#         pass
+
+# def GetMainanenceInsights(locationName : str):
+#     query3 = "SELECT * from maintenance_requests WHERE apartment_id = %s"
+
+#     apartments = GetApartmentsFromLocation(GetLocation(locationName)[0])
+
+#     conn = GetConnection()
+#     dbcursor = conn.cursor()
+#     dbcursor.execute('USE {};'.format(devName)) #use database'
+#     print("Entered Database") 
+    
+#     requests = []
+
+#     for apartment in apartments:
+#         dbcursor.execute(query3, (id[0],))
 

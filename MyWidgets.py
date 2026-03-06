@@ -2,7 +2,8 @@ import sys
 import random
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
-from PySide6.QtCore import * 
+from PySide6.QtCore import *
+from PySide6.QtCharts import * 
 from ErrorBoxes import ErrorBox
 
 #region Fonts
@@ -754,112 +755,31 @@ class FrontDeskDashboard(QWidget):
 
 
 
-# -*- coding: utf-8 -*-
+#region Graph Generation
 
-################################################################################
-## Form generated from reading UI file 'dashboardSRWSBF.ui'
-##
-## Created by: Qt User Interface Compiler version 6.10.1
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
+class BarChart(QBarSeries):
+    def __init__(self):
+        super().__init__()
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QLabel, QPushButton,
-    QSizePolicy, QStackedWidget, QWidget)
+#endregion
 
-class Ui_dashboard(QWidget):
-    def __init__(self, /, parent = ..., f = ..., *, modal = ..., windowModality = ..., enabled = ..., geometry = ..., frameGeometry = ..., normalGeometry = ..., x = ..., y = ..., pos = ..., frameSize = ..., size = ..., width = ..., height = ..., rect = ..., childrenRect = ..., childrenRegion = ..., sizePolicy = ..., minimumSize = ..., maximumSize = ..., minimumWidth = ..., minimumHeight = ..., maximumWidth = ..., maximumHeight = ..., sizeIncrement = ..., baseSize = ..., palette = ..., font = ..., cursor = ..., mouseTracking = ..., tabletTracking = ..., isActiveWindow = ..., focusPolicy = ..., focus = ..., contextMenuPolicy = ..., updatesEnabled = ..., visible = ..., minimized = ..., maximized = ..., fullScreen = ..., sizeHint = ..., minimumSizeHint = ..., acceptDrops = ..., windowTitle = ..., windowIcon = ..., windowIconText = ..., windowOpacity = ..., windowModified = ..., toolTip = ..., toolTipDuration = ..., statusTip = ..., whatsThis = ..., accessibleName = ..., accessibleDescription = ..., accessibleIdentifier = ..., layoutDirection = ..., autoFillBackground = ..., styleSheet = ..., locale = ..., windowFilePath = ..., inputMethodHints = ...):
-        super().__init__(parent, f, modal=modal, windowModality=windowModality, enabled=enabled, geometry=geometry, frameGeometry=frameGeometry, normalGeometry=normalGeometry, x=x, y=y, pos=pos, frameSize=frameSize, size=size, width=width, height=height, rect=rect, childrenRect=childrenRect, childrenRegion=childrenRegion, sizePolicy=sizePolicy, minimumSize=minimumSize, maximumSize=maximumSize, minimumWidth=minimumWidth, minimumHeight=minimumHeight, maximumWidth=maximumWidth, maximumHeight=maximumHeight, sizeIncrement=sizeIncrement, baseSize=baseSize, palette=palette, font=font, cursor=cursor, mouseTracking=mouseTracking, tabletTracking=tabletTracking, isActiveWindow=isActiveWindow, focusPolicy=focusPolicy, focus=focus, contextMenuPolicy=contextMenuPolicy, updatesEnabled=updatesEnabled, visible=visible, minimized=minimized, maximized=maximized, fullScreen=fullScreen, sizeHint=sizeHint, minimumSizeHint=minimumSizeHint, acceptDrops=acceptDrops, windowTitle=windowTitle, windowIcon=windowIcon, windowIconText=windowIconText, windowOpacity=windowOpacity, windowModified=windowModified, toolTip=toolTip, toolTipDuration=toolTipDuration, statusTip=statusTip, whatsThis=whatsThis, accessibleName=accessibleName, accessibleDescription=accessibleDescription, accessibleIdentifier=accessibleIdentifier, layoutDirection=layoutDirection, autoFillBackground=autoFillBackground, styleSheet=styleSheet, locale=locale, windowFilePath=windowFilePath, inputMethodHints=inputMethodHints)
-        self.resize(805, 581)
-        self.sideBar = QWidget(self)
-        self.sideBar.setObjectName(u"sideBar")
-        self.sideBar.setGeometry(QRect(10, 10, 91, 561))
-        self.gridLayout = QGridLayout(self.sideBar)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.leaseBtn = QPushButton(self.sideBar)
-        self.leaseBtn.setObjectName(u"leaseBtn")
-        self.leaseBtn.setCheckable(True)
-        self.leaseBtn.setAutoExclusive(True)
+#Labels contains the names of the different type of data and numData contains the number of entrys for each label
+class PieChart(QChartView):
+    def __init__(self, labels : tuple , numData : tuple , title : str):
+        super().__init__()
+        chart = QChart()
+        self.pieChart = QPieSeries()
+        for i in range(0, len(labels)):
+            self.pieChart.append(labels[i],numData[i])
+        chart.addSeries(self.pieChart)
+        chart.setTitle(title)
 
-        self.gridLayout.addWidget(self.leaseBtn, 1, 0, 1, 1)
+        self.setChart(chart)
+        
 
-        self.paymentsBtn = QPushButton(self.sideBar)
-        self.paymentsBtn.setObjectName(u"paymentsBtn")
-        self.paymentsBtn.setCheckable(True)
-        self.paymentsBtn.setAutoExclusive(True)
+#Pie for occupancy levels vs unoccupied in aprtment and then in city
 
-        self.gridLayout.addWidget(self.paymentsBtn, 2, 0, 1, 1)
+#Pie of oustandinf payments vs collected
 
-        self.accountBtn = QPushButton(self.sideBar)
-        self.accountBtn.setObjectName(u"accountBtn")
-        self.accountBtn.setCheckable(True)
-        self.accountBtn.setAutoExclusive(True)
-
-        self.gridLayout.addWidget(self.accountBtn, 0, 0, 1, 1)
-
-        self.complaintsBtn = QPushButton(self.sideBar)
-        self.complaintsBtn.setObjectName(u"complaintsBtn")
-        self.complaintsBtn.setCheckable(True)
-        self.complaintsBtn.setAutoExclusive(True)
-
-        self.gridLayout.addWidget(self.complaintsBtn, 3, 0, 1, 1)
-
-        self.stackedWidget = QStackedWidget(self)
-        self.stackedWidget.setObjectName(u"stackedWidget")
-        self.stackedWidget.setGeometry(QRect(110, 70, 681, 501))
-        self.accountPage = QWidget()
-        self.accountPage.setObjectName(u"accountPage")
-        self.label_2 = QLabel(self.accountPage)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(270, 220, 44, 16))
-        self.stackedWidget.addWidget(self.accountPage)
-        self.leasePage = QWidget()
-        self.leasePage.setObjectName(u"leasePage")
-        self.label_3 = QLabel(self.leasePage)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setGeometry(QRect(250, 250, 30, 16))
-        self.stackedWidget.addWidget(self.leasePage)
-        self.paymentPage = QWidget()
-        self.paymentPage.setObjectName(u"paymentPage")
-        self.label_4 = QLabel(self.paymentPage)
-        self.label_4.setObjectName(u"label_4")
-        self.label_4.setGeometry(QRect(280, 240, 52, 16))
-        self.stackedWidget.addWidget(self.paymentPage)
-        self.complaintsPage = QWidget()
-        self.complaintsPage.setObjectName(u"complaintsPage")
-        self.label = QLabel(self.complaintsPage)
-        self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(270, 190, 58, 16))
-        self.stackedWidget.addWidget(self.complaintsPage)
-        self.pushButton = QPushButton(self)
-        self.pushButton.setObjectName(u"pushButton")
-        self.pushButton.setGeometry(QRect(450, 30, 81, 26))
-
-        self.retranslateUi(self)
-
-        self.stackedWidget.setCurrentIndex(0)
-
-
-        QMetaObject.connectSlotsByName(self)
-    # setupUi
-
-    def retranslateUi(self):
-        self.setWindowTitle(QCoreApplication.translate("dashboard", u"Form", None))
-        self.leaseBtn.setText(QCoreApplication.translate("dashboard", u"Lease", None))
-        self.paymentsBtn.setText(QCoreApplication.translate("dashboard", u"Payments", None))
-        self.accountBtn.setText(QCoreApplication.translate("dashboard", u"Account", None))
-        self.complaintsBtn.setText(QCoreApplication.translate("dashboard", u"Complaints", None))
-        self.label_2.setText(QCoreApplication.translate("dashboard", u"Account", None))
-        self.label_3.setText(QCoreApplication.translate("dashboard", u"Lease", None))
-        self.label_4.setText(QCoreApplication.translate("dashboard", u"payments", None))
-        self.label.setText(QCoreApplication.translate("dashboard", u"complaints", None))
-        self.pushButton.setText(QCoreApplication.translate("dashboard", u"PushButton", None))
-    # retranslateUi
-
+#Line graph of expenses per week/ month / year from maintancence
+#entension add a prediction method

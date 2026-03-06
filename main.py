@@ -6,7 +6,7 @@ from PySide6.QtCore import *
 from uiMainWindow import Ui_MainWindow
 from db import *
 from ErrorBoxes import *
-from MyWidgets import Table
+from MyWidgets import *
 
 class mainScreen(QMainWindow , Ui_MainWindow):
     def __init__(self):
@@ -15,7 +15,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         self.setWindowTitle("PAMS")
         self.setMaximumSize(self.size())
 #region Testing Section
-        # self.switchTestingPage()
+        self.switchTestingPage()
 
         #self.switchFrontDeskDashboard()
 #endregion
@@ -35,9 +35,9 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         self.CustSignUp.submitBtn.clicked.connect(lambda : self.SignUpUser(self.CustSignUp.emailInput.toPlainText()))
 
         #Testing Page
-        self.TestingPage.testBtn1.clicked.connect(lambda : self.getTenantsTable())
-        self.TestingPage.testBtn2.clicked.connect(lambda : self.getLocationsTable())
-        #self.TestingPage.testBtn3.clicked.connect(lambda : )
+        self.TestingPage.testBtn1.clicked.connect(lambda : self.MakePieChart("Madrid"))
+        self.TestingPage.testBtn2.clicked.connect(lambda : self.MakePieChart("London"))
+        self.TestingPage.testBtn3.clicked.connect(lambda : self.MakePieChart("Spain"))
         #self.TestingPage.testBtn4.clicked.connect(lambda : )
 
         #Front Desk Page
@@ -117,6 +117,29 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         headers = GetHeaders("locations")
         self.table = Table(records,headers)
         self.table.show()
+    def OccupancyLevelsTesd(self):
+        print(GetUnoccupiedApartmentsForLocation("London"))
+        print(GetUnoccupiedApartmentsForLocation("Madrid"))
+        print(GetUnoccupiedApartmentsForLocation("Spain"))
+    def MakePieChart(self, locationName : str):
+        location = GetLocation(locationName)
+        if location is None:
+            self.error = ErrorBox(ErrorMessage("No Data", "There is no location by this name"))
+            self.error.show() #Change to ann error manager
+        else:
+            apartments = GetApartmentsFromLocation(location[0])
+            if apartments != None:
+                total = len(apartments)
+                unoccupied = GetUnoccupiedApartmentsForLocation(locationName)
+                if unoccupied is None:
+                    self.error = ErrorBox(ErrorMessage("No Data", "There is no location by this name"))
+                    self.error.show() #Change to ann error manager
+                else:
+                    unoccupied = len(unoccupied)
+                    self.pie = PieChart(("Occupied","Unoccupided") , (total - unoccupied, unoccupied) , "Occupied vs Unoccupided of " + locationName)
+                    self.pie.show()
+        print("Done")
+
 #endregion
 
 #region App
