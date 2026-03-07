@@ -35,9 +35,9 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         self.CustSignUp.submitBtn.clicked.connect(lambda : self.SignUpUser(self.CustSignUp.emailInput.toPlainText()))
 
         #Testing Page
-        self.TestingPage.testBtn1.clicked.connect(lambda : self.MakePieChart("Madrid"))
-        self.TestingPage.testBtn2.clicked.connect(lambda : self.MakePieChart("London"))
-        self.TestingPage.testBtn3.clicked.connect(lambda : self.MakePieChart("Spain"))
+        self.TestingPage.testBtn1.clicked.connect(lambda : self.MakePieChartUnoccupied("Madrid"))
+        self.TestingPage.testBtn2.clicked.connect(lambda : self.MakePieChartUnoccupied("London"))
+        self.TestingPage.testBtn3.clicked.connect(lambda : self.MakeLineChartMaintanenceRequests("London"))
         #self.TestingPage.testBtn4.clicked.connect(lambda : )
 
         #Front Desk Page
@@ -84,7 +84,10 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         error = CheckEmailIsValid(email)
         if error is not None:
             #Must be set to self to allow for this box to be made
-            self.errorBox = ErrorBox(error)
+            title = "Tenant Already Exists"
+            description = "This email has already been used to sign up a user. Please try a different email."
+            error = ErrorMessage(title, description)
+            self.errorBox = self.errorBox(error)
             self.errorBox.show()
         else: 
             #Changes the page to the detailed sign up
@@ -93,8 +96,10 @@ class mainScreen(QMainWindow , Ui_MainWindow):
     def RegisterTenant(self, user):
         error = CheckEmailIsValid(user[2])
         if error is not None:
-            #Must be set to self to allow for this box to be made
-            self.errorBox = ErrorBox(error)
+            title = "Tenant Already Exists"
+            description = "This email has already been used to sign up a user. Please try a different email."
+            error = ErrorMessage(title, description)
+            self.errorBox = self.errorBox(error)
             self.errorBox.show()
         else: 
             SignUpUser(user[0], user[1],user[2],user[3],user[4],user[5],user[6])
@@ -104,7 +109,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         user = LoginUser(email,password)
 
         if user is None:
-            self.errorBox = ErrorBox(user)
+            self.errorBox = ErrorBox(ErrorMessage("No User Found", "The credentials do not match any known user"))
             self.errorBox.show()
 
     def getTenantsTable(self):
@@ -121,7 +126,8 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         print(GetUnoccupiedApartmentsForLocation("London"))
         print(GetUnoccupiedApartmentsForLocation("Madrid"))
         print(GetUnoccupiedApartmentsForLocation("Spain"))
-    def MakePieChart(self, locationName : str):
+    
+    def MakePieChartUnoccupied(self, locationName : str):
         location = GetLocation(locationName)
         if location is None:
             self.error = ErrorBox(ErrorMessage("No Data", "There is no location by this name"))
@@ -130,7 +136,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
             apartments = GetApartmentsFromLocation(location[0])
             if apartments != None:
                 total = len(apartments)
-                unoccupied = GetUnoccupiedApartmentsForLocation(locationName)
+                unoccupied = GetUnoccupiedApartmentsForLocation(location[0])
                 if unoccupied is None:
                     self.error = ErrorBox(ErrorMessage("No Data", "There is no location by this name"))
                     self.error.show() #Change to ann error manager
@@ -140,6 +146,19 @@ class mainScreen(QMainWindow , Ui_MainWindow):
                     self.pie.show()
         print("Done")
 
+    def MakeLineChartMaintanenceRequests(self, locationName : str):
+        location = GetLocation(locationName)
+        if location is None:
+            self.error = ErrorBox(ErrorMessage("No Data", "There is no location by this name"))
+            self.error.show() #Change to ann error manager
+        else:
+            requests = GetMainanenceRequestsForLocation(location[0])
+            apartments = GetApartmentsFromLocation(location[0])
+            print(len(requests))
+            print(len(apartments))
+            self.pie = PieChart(labels= ("Repairs In Progress", "Functional"),numData= ((len(requests)), len(apartments) - len(requests)) ,title= "Repairs in progress vs functional rooms")
+            self.pie.show()
+        print("Done")
 #endregion
 
 #region App

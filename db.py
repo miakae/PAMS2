@@ -3,10 +3,10 @@ import random
 
 import mysql.connector
 from mysql.connector import errorcode
-
 from dbSecrets import *
 
-from ErrorBoxes import ErrorMessage
+
+
 
 isUsingDev = True
 
@@ -147,19 +147,7 @@ def CheckEmailIsValid(email : str):
     dbcursor.execute(query, (email,))
     user = dbcursor.fetchone()
     
-    if user is not None:
-        dbcursor.close()
-        conn.close()
-        print("Database Closed")
-        title = "Tenant Already Exists"
-        description = "This email has already been used to sign up a user. Please try a different email."
-        error = ErrorMessage(title, description)
-        return (error)
-    else:
-        dbcursor.close()
-        conn.close()
-        print("Database Closed")
-        return None
+    return user
 
 #This assumes that the email has already been checked
 def SignUpUser(fName : str, lName : str, email : str, password : str, NINumber : str, phoneNum : int, job: str):
@@ -187,68 +175,49 @@ def LoginUser(email : str, hashedPassword : str):
     print("Entered Database")   
     dbcursor.execute(query, (email, password ,))
     tenant = dbcursor.fetchone()
-    if tenant is None:
-        dbcursor.close()
-        conn.close()
-        print("Database Closed")
-        title = "Failure To Login"
-        description = "No user matches the credentials provided."
-        error = ErrorMessage(title, description)
-        return (error)
-    else:
-        dbcursor.close()
-        conn.close()
-        print("Database Closed")
-        return None
+    return tenant
 
-# Returns the ids of the unoccupied apartments in a location matching the locationName value.
-def GetUnoccupiedApartmentsForLocation(locationName : str):
+# Returns the ids of the unoccupied apartments in a location matching an ID.
+def GetUnoccupiedApartmentsForLocation(locationID : int):
     query = "SELECT apartments.apartment_id from apartments WHERE location_id = %s AND occupancy_status = 0;"
 
-    location = GetLocation(locationName)
-    if location == None:
+    conn = GetConnection()
+    dbcursor = conn.cursor()    #Creating cursor object
+    dbcursor.execute('USE {};'.format(devName)) #use database'
+    print("Entered Database") 
+
+    dbcursor.execute(query, (locationID,))
+    unoccupiedApartments = dbcursor.fetchall()
+
+    return unoccupiedApartments
+
+# def GetPaymentInsights(locationName : str):
+#     id = GetLocation(locationName)
+
+
+def GetMainanenceRequestsForLocation(locationID : str):
+    query3 = "SELECT * from maintenance_requests WHERE apartment_id = %s;"
+
+    apartments = GetApartmentsFromLocation(locationID)
+    if apartments is None:
         return None
     else:
         conn = GetConnection()
         dbcursor = conn.cursor()    #Creating cursor object
         dbcursor.execute('USE {};'.format(devName)) #use database'
-        print("Entered Database") 
-
-        dbcursor.execute(query, (location[0],))
-        unoccupiedApartments = dbcursor.fetchall()
-
-        return unoccupiedApartments
-
-# def GetPaymentInsights(locationName : str):
-#     query = "SELECT locations.location_id FROM locations WHERE locations.location_name = %s;"
-#     query2 = "SELECT "
-#     conn = GetConnection()
-
-#     dbcursor = conn.cursor()    #Creating cursor object
-#     dbcursor.execute('USE {};'.format(devName)) #use database'
-#     print("Entered Database") 
-#     dbcursor.execute(query, (locationName,))
-#     id = dbcursor.fetchone()
-#     if(id is None):
-#         dbcursor.close()
-#         conn.close()
-#         print("Database Closed")
-#         return ErrorMessage("No Data", "There is no location by this name")
-#     else:
-#         pass
-
-# def GetMainanenceInsights(locationName : str):
-#     query3 = "SELECT * from maintenance_requests WHERE apartment_id = %s"
-
-#     apartments = GetApartmentsFromLocation(GetLocation(locationName)[0])
-
-#     conn = GetConnection()
-#     dbcursor = conn.cursor()
-#     dbcursor.execute('USE {};'.format(devName)) #use database'
-#     print("Entered Database") 
-    
-#     requests = []
-
-#     for apartment in apartments:
-#         dbcursor.execute(query3, (id[0],))
+        print("Entered Database")
+        print("Reason: Gather Maintanence requests by Apartment Id")
+        
+        requests = []
+        for apartment in apartments:
+            print(apartment[0])
+            dbcursor.execute(query3, (apartment[0],))
+            request = dbcursor.fetchone()
+            if request is not None:
+                requests.append(request)
+        
+        conn.close()
+        dbcursor.close()
+        print("Closed Database")
+        return requests                
 
