@@ -443,7 +443,6 @@ class Dashboard(QWidget):
 
 # The Table class takes list of IEntity objects and a list of headers and populates a table.
 # The table also incluedes a search function that is not case sensitive hides all data that does not match.
-# TODO Make more efficient here as now using iEnity List 
 class Table(QTableWidget):  
     def __init__(self, records : list[IEntity], headers):
         super().__init__()
@@ -468,6 +467,23 @@ class Table(QTableWidget):
         for match in matches:
             self.showRow(match.row())
 
+
+    def UpdateTable(self, records, headers):
+        self.clear()
+        lenHeader = len(headers)
+        lenRecords = len(records)
+        self.setColumnCount(lenHeader)
+        self.setRowCount(lenRecords)
+        self.verticalHeader().setVisible(False)
+        for header in range(0,lenHeader):
+            self.setHorizontalHeaderItem(header,QTableWidgetItem(str(headers[header][0])))
+        
+        # Converts the database format of the records into table
+        for x in range(len(records)):
+            record = records[x].GetDataBaseFormat()
+            for y in range(0,len(record)):
+                self.setItem(x,y,QTableWidgetItem(str(record[y])))
+        
 
         
 
@@ -661,7 +677,8 @@ class FrontDeskDashboard(QWidget):
         self.errorMessage_2 = QWidget(self.manageTenants)
         self.errorMessage_2.setObjectName(u"errorMessage_2")
         self.errorMessage_2.setGeometry(QRect(480, 80, 231, 141))
-        self.tenantTable = QTableWidget(self.manageTenants)
+        self.tenantTable = Table([],[])
+        self.tenantTable.setParent(self.manageTenants)
         self.tenantTable.setObjectName(u"tenantTable")
         self.tenantTable.setGeometry(QRect(10, 30, 711, 201))
         self.searchBar = QLineEdit(self.manageTenants)
@@ -730,11 +747,7 @@ class FrontDeskDashboard(QWidget):
         self.passwordInput.setPlaceholderText(QCoreApplication.translate("Form", u"Password", None))
     # retranslateUi
 
-    def UpdateTenants(self, records, headers):
-        self.tenantTable = Table(records, headers)
-        self.tenantTable.setParent(self.manageTenants)
-        self.tenantTable.setObjectName(u"tenantTable")
-        self.tenantTable.setGeometry(QRect(10, 30, 711, 201))
+
         
     def Submit(self):
         fName = self.firstNameInput.text()

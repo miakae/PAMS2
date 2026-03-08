@@ -1,5 +1,6 @@
 import sys
 import random
+from wsgiref import headers
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import * 
@@ -81,7 +82,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
     
     def switchFrontDeskDashboard(self):
         self.stackedView.setCurrentIndex(7)
-        self.FrontDeskDash.UpdateTenants(GetTenants(),GetHeaders("tenants"))
+        self.FrontDeskDash.tenantTable.UpdateTable(GetTenants(), GetHeaders("tenants"))
         self.FrontDeskDash.searchBar.textChanged.connect(lambda : self.FrontDeskDash.tenantTable.search(self.FrontDeskDash.searchBar.text()))
 #endregion
 
