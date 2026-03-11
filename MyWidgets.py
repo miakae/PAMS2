@@ -805,114 +805,464 @@ class PieChart(QChartView):
 
 #region Finance Dashboard
 
+
+#endregion
+
 class FinanceDashboard(QWidget):
     def __init__(self):
         super().__init__()
-
         self.resize(831, 581)
-        self.Graphs = QFrame(self)
+
+        #region Title
+        self.titleFrame = QFrame(self)
+        self.titleFrame.setObjectName(u"titleFrame")
+        self.titleFrame.setGeometry(QRect(0, 10, 831, 91))
+        self.titleFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.titleFrame.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_2 = QHBoxLayout(self.titleFrame)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label = QLabel(self.titleFrame)
+        self.label.setObjectName(u"label")
+        self.label.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.horizontalLayout_2.addWidget(self.label)
+        #endregion
+
+
+        #Region Main Content
+        self.stackedWidget = QStackedWidget(self)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.stackedWidget.setGeometry(QRect(10, 110, 811, 461))
+        #endregion
+
+
+        #region Tabs
+        self.tabs = QFrame(self)
+        self.tabs.setObjectName(u"tabs")
+        self.tabs.setGeometry(QRect(0, 100, 831, 41))
+        self.tabs.setFrameShape(QFrame.Shape.StyledPanel)
+        self.tabs.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_8 = QHBoxLayout(self.tabs)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+
+        # Payment Tab Button
+        self.paymentsBtn = QPushButton(self.tabs)
+        self.paymentsBtn.setObjectName(u"paymentsBtn")
+        self.horizontalLayout_8.addWidget(self.paymentsBtn)
+
+        # Invoice Tab Button
+        self.invoicesBtn = QPushButton(self.tabs)
+        self.invoicesBtn.setObjectName(u"invoicesBtn")
+        self.horizontalLayout_8.addWidget(self.invoicesBtn)
+
+        # Report Tab Button
+        self.reportBtn = QPushButton(self.tabs)
+        self.reportBtn.setObjectName(u"reportBtn")
+        self.horizontalLayout_8.addWidget(self.reportBtn)
+        #endregion
+
+        #region Pages
+        #region Report Page
+        self.ReportPage = QWidget()
+        self.ReportPage.setObjectName(u"ReportPage")
+        self.Graphs = QFrame(self.ReportPage)
         self.Graphs.setObjectName(u"Graphs")
-        self.Graphs.setGeometry(QRect(200, 100, 411, 361))
+        self.Graphs.setGeometry(QRect(180, 50, 411, 361))
         self.Graphs.setFrameShape(QFrame.Shape.StyledPanel)
         self.Graphs.setFrameShadow(QFrame.Shadow.Raised)
-
-
-
-        self.stackedWidget = QStackedWidget(self.Graphs)
-        self.stackedWidget.setObjectName(u"stackedWidget")
-        self.stackedWidget.setGeometry(QRect(10, 60, 391, 291))
-
-        #Occupancy Chart
-        self.Occupancy = PieChart((),(),"")
+        self.graphsStackedWidget = QStackedWidget(self.Graphs)
+        self.graphsStackedWidget.setObjectName(u"graphsStackedWidget")
+        self.graphsStackedWidget.setGeometry(QRect(10, 60, 391, 291))
+        self.Occupancy = PieChart((),(), "Occupancy Levels")
         self.Occupancy.setObjectName(u"Occupancy")
-        self.Occupancy.setParent(self.stackedWidget)
-        self.stackedWidget.addWidget(self.Occupancy)
-        
-        
-        #Collection Rate Chart
-        self.CollectionRate = PieChart((),(),"")
-        self.CollectionRate.setObjectName(u"CollectionRate")
-        self.CollectionRate.setParent(self.stackedWidget)
-        self.stackedWidget.addWidget(self.CollectionRate)
-
-
-
-        self.MaintenceCost = PieChart((),(),"")
+        self.graphsStackedWidget.addWidget(self.Occupancy)
+        self.MaintenceCost = PieChart((),(), "Maintenance Costs")
         self.MaintenceCost.setObjectName(u"MaintenceCost")
-        self.MaintenceCost.setParent(self.stackedWidget)
-        self.stackedWidget.addWidget(self.MaintenceCost)
-
-
-       
-
-
-        #Button group
+        self.graphsStackedWidget.addWidget(self.MaintenceCost)
+        self.CollectionRate = PieChart((),(), "Collection Rates")
+        self.CollectionRate.setObjectName(u"CollectionRate")
+        self.graphsStackedWidget.addWidget(self.CollectionRate)
         self.btnGroup = QFrame(self.Graphs)
         self.btnGroup.setObjectName(u"btnGroup")
-        self.btnGroup.setGeometry(QRect(10, 10, 391, 48))
+        self.btnGroup.setGeometry(QRect(10, 10, 391, 44))
         self.btnGroup.setFrameShape(QFrame.Shape.StyledPanel)
         self.btnGroup.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout = QHBoxLayout(self.btnGroup)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-
-
-        #Occupany Level Btn
         self.occupancyBtn = QPushButton(self.btnGroup)
         self.occupancyBtn.setObjectName(u"occupancyBtn")
+
         self.horizontalLayout.addWidget(self.occupancyBtn)
-        self.occupancyBtn.clicked.connect(lambda : self.switchToOccupanyLevels())
 
-
-        #Collection Rate Btn
         self.collectionBtn = QPushButton(self.btnGroup)
         self.collectionBtn.setObjectName(u"collectionBtn")
-        self.collectionBtn.setDisabled(True)
-        self.horizontalLayout.addWidget(self.collectionBtn)
-        self.collectionBtn.clicked.connect(lambda : self.switchToCollectionRate())
+        self.collectionBtn.setDisabled(True) #TODO Graph has no implmentation yet so disable button for now
 
-        #Maintenance Btn
+        self.horizontalLayout.addWidget(self.collectionBtn)
+
         self.maintenanceBtn = QPushButton(self.btnGroup)
         self.maintenanceBtn.setObjectName(u"maintenanceBtn")
+
         self.horizontalLayout.addWidget(self.maintenanceBtn)
+        
+        self.stackedWidget.addWidget(self.ReportPage)
+        #endregion
+        
+        #region Invoice Page
+        self.InvoicePage = QWidget()
+        self.InvoicePage.setObjectName(u"InvoicePage")
+        
+
+        #Title
+        self.invoiceFrame = QFrame(self.InvoicePage)
+        self.invoiceFrame.setObjectName(u"invoiceFrame")
+        self.invoiceFrame.setGeometry(QRect(10, 20, 791, 431))
+        self.invoiceFrame.setFrameShape(QFrame.Shape.StyledPanel)
+
+        self.invoiceTitleBar = QFrame(self.invoiceFrame)
+        self.invoiceTitleBar.setObjectName(u"invoiceTitleBar")
+        self.invoiceTitleBar.setGeometry(QRect(5, 5, 781, 51))
+        self.invoiceTitleBar.setFrameShape(QFrame.Shape.StyledPanel)
+        self.invoiceTitleBar.setFrameShadow(QFrame.Shadow.Raised)
+
+        self.horizontalLayout_7 = QHBoxLayout(self.invoiceTitleBar)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+
+        self.invoiceTitle = QLabel(self.invoiceTitleBar)
+        self.invoiceTitle.setObjectName(u"label_3")
+        self.invoiceTitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.horizontalLayout_7.addWidget(self.invoiceTitle)
+
+        self.createInvoice = QFrame(self.invoiceFrame)
+        self.createInvoice.setObjectName(u"createInvoice")
+        self.createInvoice.setGeometry(QRect(10, 60, 771, 361))
+        self.createInvoice.setFrameShape(QFrame.Shape.StyledPanel)
+        self.createInvoice.setFrameShadow(QFrame.Shadow.Raised)
+        self.stackedWidget.addWidget(self.InvoicePage)
+        #endregion
+        
+        #region Payment Page
+        self.PaymentPage = QWidget()
+        self.PaymentPage.setObjectName(u"PaymentPage")
+        
+        
+        
+        self.managePayments = QGroupBox(self.PaymentPage)
+        self.managePayments.setObjectName(u"managePayments")
+        self.managePayments.setGeometry(QRect(20, 30, 771, 431))
+
+        #Table
+        self.paymentTable = Table([],[])
+        self.paymentTable.setParent(self.managePayments)
+        self.paymentTable.setObjectName(u"tenantTable")
+        self.paymentTable.setGeometry(QRect(10, 50, 751, 371))
+        self.tableBar = QFrame(self.managePayments)
+        self.tableBar.setObjectName(u"tableBar")
+        self.tableBar.setGeometry(QRect(10, 5, 751, 46))
+        self.tableBar.setFrameShape(QFrame.Shape.StyledPanel)
+        self.tableBar.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_4 = QHBoxLayout(self.tableBar)
+        self.horizontalLayout_4.setSpacing(0)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.tableTitle = QFrame(self.tableBar)
+        self.tableTitle.setObjectName(u"tableTitle")
+        self.tableTitle.setFrameShape(QFrame.Shape.StyledPanel)
+        self.tableTitle.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_6 = QHBoxLayout(self.tableTitle)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.title = QLabel(self.tableTitle)
+        self.title.setObjectName(u"title")
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_6.addWidget(self.title)
+        self.horizontalLayout_4.addWidget(self.tableTitle)
+
+
+        #Tool Bar
+        self.toolBar = QFrame(self.tableBar)
+        self.toolBar.setObjectName(u"toolBar")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.toolBar.sizePolicy().hasHeightForWidth())
+        self.toolBar.setSizePolicy(sizePolicy)
+        self.toolBar.setFrameShape(QFrame.Shape.StyledPanel)
+        self.toolBar.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_5 = QHBoxLayout(self.toolBar)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.latePaymentsBtn = QPushButton(self.toolBar)
+        self.latePaymentsBtn.setObjectName(u"latePaymentsBtn")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.latePaymentsBtn.sizePolicy().hasHeightForWidth())
+        self.latePaymentsBtn.setSizePolicy(sizePolicy1)
+        self.horizontalLayout_5.addWidget(self.latePaymentsBtn)
+
+        self.refreshBtn = QPushButton(self.toolBar)
+        self.refreshBtn.setObjectName(u"refreshBtn")
+        sizePolicy1.setHeightForWidth(self.refreshBtn.sizePolicy().hasHeightForWidth())
+        self.refreshBtn.setSizePolicy(sizePolicy1)
+        font = QFont()
+        font.setFamilies([u"Wingdings 3"])
+        self.refreshBtn.setFont(font)
+
+        self.horizontalLayout_5.addWidget(self.refreshBtn)
+
+        self.searchBar_2 = QLineEdit(self.toolBar)
+        self.searchBar_2.setObjectName(u"searchBar_2")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.searchBar_2.sizePolicy().hasHeightForWidth())
+        self.searchBar_2.setSizePolicy(sizePolicy2)
+
+        self.horizontalLayout_5.addWidget(self.searchBar_2)
+
+        self.horizontalLayout_4.addWidget(self.toolBar)
+
+        self.stackedWidget.addWidget(self.PaymentPage)
+        #endregion
+        #endregion
+        
+        #Connections
+        self.occupancyBtn.clicked.connect(lambda : self.switchToOccupanyLevels())
+        self.collectionBtn.clicked.connect(lambda : self.switchToCollectionRate())
         self.maintenanceBtn.clicked.connect(lambda : self.switchToMaintenance())
+        self.invoicesBtn.clicked.connect(lambda : self.switchToInvoices())
+        self.paymentsBtn.clicked.connect(lambda : self.switchToPayments())
+        self.reportBtn.clicked.connect(lambda : self.switchToReport())
 
-
+        self.stackedWidget.setCurrentIndex(2)
         self.retranslateUi()
-
     # setupUi
 
     def retranslateUi(self):
-        self.setWindowTitle(QCoreApplication.translate("FinanceDashboard", u"Form", None))
-        self.occupancyBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Occupancy Levels", None))
-        self.collectionBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Collection Rate", None))
-        self.maintenanceBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Maintenence", None))
+        self.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
+        self.label.setText(QCoreApplication.translate("Form", u"Finance Dashboard", None))
+        self.occupancyBtn.setText(QCoreApplication.translate("Form", u"Occupancy Levels", None))
+        self.collectionBtn.setText(QCoreApplication.translate("Form", u"Collection Rate", None))
+        self.maintenanceBtn.setText(QCoreApplication.translate("Form", u"Maintenance", None))
+        self.invoiceTitle.setText(QCoreApplication.translate("Form", u"Issue Invoices", None))
+        self.managePayments.setTitle("")
+        self.title.setText(QCoreApplication.translate("Form", u"Payments", None))
+        self.latePaymentsBtn.setText(QCoreApplication.translate("Form", u"Late Payments", None))
+        self.refreshBtn.setText(QCoreApplication.translate("Form", u"P", None))
+        self.searchBar_2.setPlaceholderText(QCoreApplication.translate("Form", u"Search", None))
+        self.paymentsBtn.setText(QCoreApplication.translate("Form", u"Payments", None))
+        self.invoicesBtn.setText(QCoreApplication.translate("Form", u"Invoices", None))
+        self.reportBtn.setText(QCoreApplication.translate("Form", u"Report", None))
     # retranslateUi
-
     def switchToOccupanyLevels(self):
-        self.stackedWidget.setCurrentIndex(0)
+        self.graphsStackedWidget.setCurrentIndex(0)
 
     def switchToCollectionRate(self):
-        self.stackedWidget.setCurrentIndex(1)
+        self.graphsStackedWidget.setCurrentIndex(2)
 
     def switchToMaintenance(self):
-        self.stackedWidget.setCurrentIndex(2)
+        self.graphsStackedWidget.setCurrentIndex(1)
 
     def CreateOccupancyLevels(self, pie :PieChart):
         self.Occupancy.setChart(pie.chart())
         self.Occupancy.setGeometry(QRect(10, 60, 391, 291))
-        self.Occupancy.setParent(self.stackedWidget)
+        self.Occupancy.setParent(self.graphsStackedWidget)
         print("Created Occupancy Pie")
 
     def CreateCollectionRates(self, pie :PieChart):
         self.CollectionRate.setChart(pie.chart())
         self.CollectionRate.setGeometry(QRect(10, 60, 391, 291))
-        self.CollectionRate.setParent(self.stackedWidget)
+        self.CollectionRate.setParent(self.graphsStackedWidget)
         print("Created Collection Pie")
 
     def CreateMaintenance(self, pie :PieChart):
         self.MaintenceCost.setChart(pie.chart())
         self.MaintenceCost.setGeometry(QRect(10, 60, 391, 291))
-        self.MaintenceCost.setParent(self.stackedWidget)
+        self.MaintenceCost.setParent(self.graphsStackedWidget)
         print("Created Maintenence Pie")
-    
+
+
+    def switchToInvoices(self):
+        self.stackedWidget.setCurrentIndex(1)
+    def switchToPayments(self):
+        self.stackedWidget.setCurrentIndex(2)
+    def switchToReport(self):
+        self.stackedWidget.setCurrentIndex(0)
+
 #endregion
+
+# class FinanceDashboard(QWidget):
+#     def __init__(self):
+#         super().__init__()
+
+#         self.resize(831, 581)
+#         self.Graphs = QFrame(self)
+#         self.Graphs.setObjectName(u"Graphs")
+#         self.Graphs.setGeometry(QRect(200, 100, 411, 361))
+#         self.Graphs.setFrameShape(QFrame.Shape.StyledPanel)
+#         self.Graphs.setFrameShadow(QFrame.Shadow.Raised)
+
+
+
+#         self.stackedWidget = QStackedWidget(self.Graphs)
+#         self.stackedWidget.setObjectName(u"stackedWidget")
+#         self.stackedWidget.setGeometry(QRect(10, 60, 391, 291))
+
+#         #Occupancy Chart
+#         self.Occupancy = PieChart((),(),"")
+#         self.Occupancy.setObjectName(u"Occupancy")
+#         self.Occupancy.setParent(self.stackedWidget)
+#         self.stackedWidget.addWidget(self.Occupancy)
+        
+        
+#         #Collection Rate Chart
+#         self.CollectionRate = PieChart((),(),"")
+#         self.CollectionRate.setObjectName(u"CollectionRate")
+#         self.CollectionRate.setParent(self.stackedWidget)
+#         self.stackedWidget.addWidget(self.CollectionRate)
+
+
+
+#         self.MaintenceCost = PieChart((),(),"")
+#         self.MaintenceCost.setObjectName(u"MaintenceCost")
+#         self.MaintenceCost.setParent(self.stackedWidget)
+#         self.stackedWidget.addWidget(self.MaintenceCost)
+
+
+       
+
+
+#         #Button group
+#         self.btnGroup = QFrame(self.Graphs)
+#         self.btnGroup.setObjectName(u"btnGroup")
+#         self.btnGroup.setGeometry(QRect(10, 10, 391, 48))
+#         self.btnGroup.setFrameShape(QFrame.Shape.StyledPanel)
+#         self.btnGroup.setFrameShadow(QFrame.Shadow.Raised)
+#         self.horizontalLayout = QHBoxLayout(self.btnGroup)
+#         self.horizontalLayout.setObjectName(u"horizontalLayout")
+
+
+#         #Occupany Level Btn
+#         self.occupancyBtn = QPushButton(self.btnGroup)
+#         self.occupancyBtn.setObjectName(u"occupancyBtn")
+#         self.horizontalLayout.addWidget(self.occupancyBtn)
+#         self.occupancyBtn.clicked.connect(lambda : self.switchToOccupanyLevels())
+
+
+#         #Collection Rate Btn
+#         self.collectionBtn = QPushButton(self.btnGroup)
+#         self.collectionBtn.setObjectName(u"collectionBtn")
+#         self.collectionBtn.setDisabled(True)
+#         self.horizontalLayout.addWidget(self.collectionBtn)
+#         self.collectionBtn.clicked.connect(lambda : self.switchToCollectionRate())
+
+#         #Maintenance Btn
+#         self.maintenanceBtn = QPushButton(self.btnGroup)
+#         self.maintenanceBtn.setObjectName(u"maintenanceBtn")
+#         self.horizontalLayout.addWidget(self.maintenanceBtn)
+#         self.maintenanceBtn.clicked.connect(lambda : self.switchToMaintenance())
+
+
+#         self.retranslateUi()
+
+#     # setupUi
+
+#     def retranslateUi(self):
+#         self.setWindowTitle(QCoreApplication.translate("FinanceDashboard", u"Form", None))
+#         self.occupancyBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Occupancy Levels", None))
+#         self.collectionBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Collection Rate", None))
+#         self.maintenanceBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Maintenence", None))
+#     # retranslateUi
+
+#     def switchToOccupanyLevels(self):
+#         self.stackedWidget.setCurrentIndex(0)
+
+#     def switchToCollectionRate(self):
+#         self.stackedWidget.setCurrentIndex(1)
+
+#     def switchToMaintenance(self):
+#         self.stackedWidget.setCurrentIndex(2)
+
+#     def CreateOccupancyLevels(self, pie :PieChart):
+#         self.Occupancy.setChart(pie.chart())
+#         self.Occupancy.setGeometry(QRect(10, 60, 391, 291))
+#         self.Occupancy.setParent(self.stackedWidget)
+#         print("Created Occupancy Pie")
+
+#     def CreateCollectionRates(self, pie :PieChart):
+#         self.CollectionRate.setChart(pie.chart())
+#         self.CollectionRate.setGeometry(QRect(10, 60, 391, 291))
+#         self.CollectionRate.setParent(self.stackedWidget)
+#         print("Created Collection Pie")
+
+#     def CreateMaintenance(self, pie :PieChart):
+#         self.MaintenceCost.setChart(pie.chart())
+#         self.MaintenceCost.setGeometry(QRect(10, 60, 391, 291))
+#         self.MaintenceCost.setParent(self.stackedWidget)
+#         print("Created Maintenence Pie")
+    
+
+
+
+
+
+    # Graph Page
+
+    #     self.GraphPage = QFrame(self.stackedWidget)
+    #     self.GraphPage.setObjectName(u"GraphPage")
+    #     self.GraphPage.setGeometry(QRect(180, 50, 411, 361))
+    #     self.GraphPage.setFrameShape(QFrame.Shape.StyledPanel)
+    #     self.GraphPage.setFrameShadow(QFrame.Shadow.Raised)
+
+    #     self.graphsStackedWidget = QStackedWidget(self.GraphPage)
+    #     self.graphsStackedWidget.setObjectName(u"graphsStackedWidget")
+    #     self.graphsStackedWidget.setGeometry(QRect(180, 50, 411, 361))
+        
+    #     Occupancy Chart
+    #     self.Occupancy = PieChart((),(),"")
+    #     self.Occupancy.setObjectName(u"Occupancy")
+    #     self.Occupancy.setParent(self.graphsStackedWidget)
+    #     self.graphsStackedWidget.addWidget(self.Occupancy)
+
+    #     Maintenance Cost Chart
+    #     self.MaintenceCost = PieChart((),(),"")
+    #     self.MaintenceCost.setObjectName(u"MaintenceCost")
+    #     self.MaintenceCost.setParent(self.graphsStackedWidget)
+    #     self.graphsStackedWidget.addWidget(self.MaintenceCost)
+
+    #     Collection Rate Chart
+    #     self.CollectionRate = PieChart((),(),"")
+    #     self.CollectionRate.setObjectName(u"CollectionRate")
+    #     self.CollectionRate.setParent(self.graphsStackedWidget)
+    #     self.graphsStackedWidget.addWidget(self.CollectionRate)
+
+    #     Buttons
+    #     TODO ADD LINE FOR MAINTENENCE COSTS PER MONTH/ WEEK/ YEAR
+    #     TODO IMPLEMENT COLLECTION RATE CHART
+    #     self.btnGroup = QFrame(self.GraphPage)
+    #     self.btnGroup.setObjectName(u"btnGroup")
+    #     self.btnGroup.setGeometry(QRect(10, 10, 391, 44))
+    #     self.btnGroup.setFrameShape(QFrame.Shape.StyledPanel)
+    #     self.btnGroup.setFrameShadow(QFrame.Shadow.Raised)
+
+    #     self.horizontalLayout = QHBoxLayout(self.btnGroup)
+    #     self.horizontalLayout.setObjectName(u"horizontalLayout")
+
+
+    #     Occupany Level Btn
+    #     self.occupancyBtn = QPushButton(self.btnGroup)
+    #     self.occupancyBtn.setObjectName(u"occupancyBtn")
+    #     self.horizontalLayout.addWidget(self.occupancyBtn)
+
+    #     Collection Rate Btn
+    #     self.collectionBtn = QPushButton(self.btnGroup)
+    #     self.collectionBtn.setObjectName(u"collectionBtn")
+    #     self.collectionBtn.setDisabled(True)
+    #     self.horizontalLayout.addWidget(self.collectionBtn)
+
+    #     Maintenance Btn
+    #     self.maintenanceBtn = QPushButton(self.btnGroup)
+    #     self.maintenanceBtn.setObjectName(u"maintenanceBtn")
+    #     self.horizontalLayout.addWidget(self.maintenanceBtn)
+
+       
