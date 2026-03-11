@@ -20,7 +20,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
     #This section is used test functionality, quick testing and debugging. 
         #self.switchTestingPage()
 
-        #self.switchFrontDeskDashboard()
+        #self.switchToFinanceDashboard()
         #Testing Page
         self.TestingPage.testBtn1.clicked.connect(lambda : self.MakePieChartUnoccupied("Madrid"))
         self.TestingPage.testBtn2.clicked.connect(lambda : self.MakePieChartUnoccupied("London"))
@@ -39,7 +39,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         #Customer Page
 
         self.CustLogin.loginBtn.clicked.connect(lambda : self.LoginTenantBTN(self.CustLogin.emailInput.toPlainText(),self.CustLogin.passwordInput.toPlainText()))
-        self.AdminLogin.loginBtn.clicked.connect(lambda : self.switchFrontDeskDashboard())
+        self.AdminLogin.loginBtn.clicked.connect(lambda : self.switchToFinanceDashboard())
 
         self.CustLogin.signUpBtn.clicked.connect(lambda : self.switchCustomerSignUp())
         self.CustSignUp.submitBtn.clicked.connect(lambda : self.SignUpUser(self.CustSignUp.emailInput.toPlainText()))
@@ -84,6 +84,10 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         self.stackedView.setCurrentIndex(7)
         self.FrontDeskDash.tenantTable.UpdateTable(GetTenants(), GetHeaders("tenants"))
         self.FrontDeskDash.searchBar.textChanged.connect(lambda : self.FrontDeskDash.tenantTable.search(self.FrontDeskDash.searchBar.text()))
+    def switchToFinanceDashboard(self):
+        self.stackedView.setCurrentIndex(8)
+        self.FinanceDash.CreateOccupancyLevels(self.MakePieChartUnoccupied("London")) # Add specifc location for the user
+        self.FinanceDash.CreateMaintenance(self.MakeMaintanenceRequestsPieChart("London")) # Add specifc location for the user
 #endregion
 
 #region Interaction Functions
@@ -156,8 +160,8 @@ class mainScreen(QMainWindow , Ui_MainWindow):
                     self.error.show() #Change to ann error manager
                 else:
                     unoccupied = len(unoccupied)
-                    self.pie = PieChart(("Occupied","Unoccupied") , (total - unoccupied, unoccupied) , "Occupied vs Unoccupied of " + locationName)
-                    self.pie.show()
+                    pie = PieChart(("Occupied","Unoccupied") , (total - unoccupied, unoccupied) , "Occupied vs Unoccupied of " + locationName)
+                    return pie
         print("Done")
     # Creates a pie chart that shows the number of maintanence requests in a given location compared to the apartments that are functional.
     def MakeMaintanenceRequestsPieChart(self, locationName : str):
@@ -170,8 +174,8 @@ class mainScreen(QMainWindow , Ui_MainWindow):
             apartments = GetApartmentsFromLocation(location.id)
             print(len(requests))
             print(len(apartments))
-            self.pie = PieChart(labels= ("Repairs In Progress", "Functional"),numData= ((len(requests)), len(apartments) - len(requests)) ,title= "Repairs in progress vs functional rooms")
-            self.pie.show()
+            pie = PieChart(labels= ("Repairs In Progress", "Functional"),numData= ((len(requests)), len(apartments) - len(requests)) ,title= "Repairs in progress vs functional rooms")
+            return pie
         print("Done")
 #endregion
 

@@ -802,3 +802,117 @@ class PieChart(QChartView):
 
 #TODO CREATE A PIE GRAPH FOR OUTSTANDING VERSES COLLECTED PAYMENTS 
 #TODO CREATE A LINE GRAPH FOR THE EPENSES PER WEEK/ MONTH / YEAR FROM MAINTANENCE
+
+#region Finance Dashboard
+
+class FinanceDashboard(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.resize(831, 581)
+        self.Graphs = QFrame(self)
+        self.Graphs.setObjectName(u"Graphs")
+        self.Graphs.setGeometry(QRect(200, 100, 411, 361))
+        self.Graphs.setFrameShape(QFrame.Shape.StyledPanel)
+        self.Graphs.setFrameShadow(QFrame.Shadow.Raised)
+
+
+
+        self.stackedWidget = QStackedWidget(self.Graphs)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.stackedWidget.setGeometry(QRect(10, 60, 391, 291))
+
+        #Occupancy Chart
+        self.Occupancy = PieChart((),(),"")
+        self.Occupancy.setObjectName(u"Occupancy")
+        self.Occupancy.setParent(self.stackedWidget)
+        self.stackedWidget.addWidget(self.Occupancy)
+        
+        
+        #Collection Rate Chart
+        self.CollectionRate = PieChart((),(),"")
+        self.CollectionRate.setObjectName(u"CollectionRate")
+        self.CollectionRate.setParent(self.stackedWidget)
+        self.stackedWidget.addWidget(self.CollectionRate)
+
+
+
+        self.MaintenceCost = PieChart((),(),"")
+        self.MaintenceCost.setObjectName(u"MaintenceCost")
+        self.MaintenceCost.setParent(self.stackedWidget)
+        self.stackedWidget.addWidget(self.MaintenceCost)
+
+
+       
+
+
+        #Button group
+        self.btnGroup = QFrame(self.Graphs)
+        self.btnGroup.setObjectName(u"btnGroup")
+        self.btnGroup.setGeometry(QRect(10, 10, 391, 48))
+        self.btnGroup.setFrameShape(QFrame.Shape.StyledPanel)
+        self.btnGroup.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout = QHBoxLayout(self.btnGroup)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+
+
+        #Occupany Level Btn
+        self.occupancyBtn = QPushButton(self.btnGroup)
+        self.occupancyBtn.setObjectName(u"occupancyBtn")
+        self.horizontalLayout.addWidget(self.occupancyBtn)
+        self.occupancyBtn.clicked.connect(lambda : self.switchToOccupanyLevels())
+
+
+        #Collection Rate Btn
+        self.collectionBtn = QPushButton(self.btnGroup)
+        self.collectionBtn.setObjectName(u"collectionBtn")
+        self.collectionBtn.setDisabled(True)
+        self.horizontalLayout.addWidget(self.collectionBtn)
+        self.collectionBtn.clicked.connect(lambda : self.switchToCollectionRate())
+
+        #Maintenance Btn
+        self.maintenanceBtn = QPushButton(self.btnGroup)
+        self.maintenanceBtn.setObjectName(u"maintenanceBtn")
+        self.horizontalLayout.addWidget(self.maintenanceBtn)
+        self.maintenanceBtn.clicked.connect(lambda : self.switchToMaintenance())
+
+
+        self.retranslateUi()
+
+    # setupUi
+
+    def retranslateUi(self):
+        self.setWindowTitle(QCoreApplication.translate("FinanceDashboard", u"Form", None))
+        self.occupancyBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Occupancy Levels", None))
+        self.collectionBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Collection Rate", None))
+        self.maintenanceBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Maintenence", None))
+    # retranslateUi
+
+    def switchToOccupanyLevels(self):
+        self.stackedWidget.setCurrentIndex(0)
+
+    def switchToCollectionRate(self):
+        self.stackedWidget.setCurrentIndex(1)
+
+    def switchToMaintenance(self):
+        self.stackedWidget.setCurrentIndex(2)
+
+    def CreateOccupancyLevels(self, pie :PieChart):
+        self.Occupancy.setChart(pie.chart())
+        self.Occupancy.setGeometry(QRect(10, 60, 391, 291))
+        self.Occupancy.setParent(self.stackedWidget)
+        print("Created Occupancy Pie")
+
+    def CreateCollectionRates(self, pie :PieChart):
+        self.CollectionRate.setChart(pie.chart())
+        self.CollectionRate.setGeometry(QRect(10, 60, 391, 291))
+        self.CollectionRate.setParent(self.stackedWidget)
+        print("Created Collection Pie")
+
+    def CreateMaintenance(self, pie :PieChart):
+        self.MaintenceCost.setChart(pie.chart())
+        self.MaintenceCost.setGeometry(QRect(10, 60, 391, 291))
+        self.MaintenceCost.setParent(self.stackedWidget)
+        print("Created Maintenence Pie")
+    
+#endregion
