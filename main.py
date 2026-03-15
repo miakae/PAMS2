@@ -37,7 +37,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         #Customer Page
 
         self.CustLogin.loginBtn.clicked.connect(lambda : self.LoginTenantBTN(self.CustLogin.emailInput.toPlainText(),self.CustLogin.passwordInput.toPlainText()))
-        self.AdminLogin.loginBtn.clicked.connect(lambda : self.switchAdminView())
+        self.AdminLogin.loginBtn.clicked.connect(lambda : self.loginStaffMember(self.AdminLogin.emailInput.toPlainText(), self.AdminLogin.passwordInput.toPlainText()))
 
         self.CustLogin.signUpBtn.clicked.connect(lambda : self.switchCustomerSignUp())
         self.CustSignUp.submitBtn.clicked.connect(lambda : self.SignUpUser(self.CustSignUp.emailInput.toPlainText()))
@@ -65,38 +65,48 @@ class mainScreen(QMainWindow , Ui_MainWindow):
     def switchAdminLoginPage(self):
         self.stackedView.setCurrentIndex(2)
     
-    def switchCustomerView(self):
+    def switchCustomerSignUp(self):
+        self.stackedView.setCurrentIndex(4)
+
+    def switchCustomerSignUpDetailed(self, email : str):
+        self.stackedView.setCurrentIndex(6)
+        self.DetailedSignUp.emailInput.setText(email)
+    
+    def switchCustomerView(self, tenant : Tenant):
         #Change when page is implemented to customer dashboard
         self.stackedView.setCurrentIndex(3)
+        self.CustDash.setTenant(tenant)
 
-    def switchAdminView(self):
+    
+    def switchAdminView(self, admin : User):
         #Change when page is implemented to customer dashboard
         self.stackedView.setCurrentIndex(9)
+        self.AdminDash.setUser(admin)
+        self.setWindowTitle(admin.firstName)
         self.AdminDash.GetLocations(GetLocations())
         self.AdminDash.CreateOccupancyLevels(self.MakePieChartUnoccupied(self.AdminDash.apartmentLocationDropdown.currentText())) #TODO add a dropdown for the reports page for locations
         self.AdminDash.CreateMaintenance(self.MakeMaintanenceRequestsPieChart(self.AdminDash.apartmentLocationDropdown.currentText())) 
         self.AdminDash.CreateUserTable(GetUsersFromLocation(self.AdminDash.userLocationDropdown.currentText()),GetHeaders("users"),[], []) 
         self.AdminDash.CreateApartmentTable(GetApartmentsFromLocation(GetLocation(self.AdminDash.apartmentLocationDropdown.currentText()).GetID()), GetHeaders("apartments"))
-    def switchCustomerSignUp(self):
-        self.stackedView.setCurrentIndex(4)
-
-
-    def switchTestingPage(self):
-        self.stackedView.setCurrentIndex(5)
     
-    def switchCustomerSignUpDetailed(self, email : str):
-        self.stackedView.setCurrentIndex(6)
-        self.DetailedSignUp.emailInput.setText(email)
     
-    def switchFrontDeskDashboard(self):
+    def switchFrontDeskDashboard(self , frontDesk: User):
         self.stackedView.setCurrentIndex(7)
+        self.FrontDeskDash.setUser(frontDesk)
+        self.setWindowTitle(frontDesk.firstName)
         self.FrontDeskDash.tenantTable.UpdateTable(GetTenants(), GetHeaders("tenants"))
         self.FrontDeskDash.searchBar.textChanged.connect(lambda : self.FrontDeskDash.tenantTable.search(self.FrontDeskDash.searchBar.text()))
-    def switchToFinanceDashboard(self):
+    
+    def switchToFinanceDashboard(self, finance : User):
         self.stackedView.setCurrentIndex(8)
+        self.FinanceDash.setUser(finance)
+        self.setWindowTitle(finance.firstName)
         self.FinanceDash.paymentTable.UpdateTable((),())
         self.FinanceDash.CreateOccupancyLevels(self.MakePieChartUnoccupied("London")) # Add specifc location for the user
         self.FinanceDash.CreateMaintenance(self.MakeMaintanenceRequestsPieChart("London")) # Add specifc location for the user
+
+    def switchTestingPage(self):
+        self.stackedView.setCurrentIndex(5)
 #endregion
 
 #region Interaction Functions
@@ -128,16 +138,44 @@ class mainScreen(QMainWindow , Ui_MainWindow):
             self.errorBox = ErrorBox(error)
             self.errorBox.show()
         else: 
-            SignUpUser(tenant)
+            SignUpTenant(tenant)
             self.switchFrontDeskDashboard()
 
-    # Not functioning 
     def LoginTenantBTN(self, email: str, password : str):
-        user = LoginUser(email,password)
+        tenant = LoginTenant(email,password)
 
-        if user is None:
+        if tenant is None:
             self.errorBox = ErrorBox(ErrorMessage("No User Found", "The credentials do not match any known user"))
             self.errorBox.show()
+        else:
+            self.switchCustomerView(tenant)
+
+    def loginStaffMember(self, email : str, password : str):
+        staff = LoginUser(email,password)
+
+        if staff is None:
+            self.errorBox = ErrorBox(ErrorMessage("No User Found", "The credentials do not match any known user"))
+            self.errorBox.show()
+        else:
+            match(staff.role):
+                case "FrontDesk":
+                    self.switchFrontDeskDashboard(staff)
+                case "Manager":
+                    #Implement manager
+                    self.switchWelcomePage()
+                case "Finance":
+                    self.switchToFinanceDashboard(staff)
+                case "Maintenance":
+                    self.switchWelcomePage()
+                case "Admin":
+                    self.switchAdminView(staff)
+                
+                case _: 
+                    self.errorBox = ErrorBox(ErrorMessage("Role Error", "Something went wrong, please contact your administrator"))
+                    self.errorBox.show()
+
+
+
 
     # Returns a table with all tenants in the database
     def getTenantsTable(self):

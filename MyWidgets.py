@@ -30,6 +30,12 @@ heading2 = QFont()
 heading2.setFamilies([u"Calibri"])
 heading2.setPointSize(18)
 
+class userPage(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.user = None
+    def setUser(self, user: IEntity):
+        self.user = user
 
 #endregion
 
@@ -213,7 +219,7 @@ class SignUpPage(QWidget):
 class AdminLoginPage(QWidget):
     def __init__(self):
         super().__init__()
-        
+        self.staff = User("","", "", "" , "" ,"", "")
         self.setObjectName(u"AdminLogin")
 
         # Group Box
@@ -242,7 +248,6 @@ class AdminLoginPage(QWidget):
         self.passwordInput.setObjectName(u"adminPasswordInput")
         self.passwordInput.setGeometry(QRect(180, 300, 461, 41))
         
-        self.passwordInput.setFont(text)
 
         self.passwordLabel = QLabel(self.adminGroup)
         self.passwordLabel.setObjectName(u"adminPasswordLabel")
@@ -288,6 +293,9 @@ class AdminLoginPage(QWidget):
         self.passwordLabel.setText(QCoreApplication.translate("MainWindow", u"Password", None))
         self.loginBtn.setText(QCoreApplication.translate("MainWindow", u"Login", None))
         self.title.setText(QCoreApplication.translate("MainWindow", u"Admin Login", None))
+
+        def setAdmin(self, admin : User):
+            self.staff = admin
 #endregion 
 
 
@@ -301,12 +309,10 @@ class AdminLoginPage(QWidget):
 # The complaint Page - Where the user will submit complaints
 # The buttons are automatically connected so no need to connect them at run time 
 
-class Dashboard(QWidget):
+class Dashboard(userPage):
         def __init__(self):
             super().__init__()
             self.resize(805, 581)
-
-
             #StackWidget / Dashboard Content
             self.stackedWidget = QStackedWidget(self)
             self.stackedWidget.setObjectName(u"stackedWidget")
@@ -431,7 +437,6 @@ class Dashboard(QWidget):
         def switchComplaintsPage(self):
             self.stackedWidget.setCurrentIndex(4)
     
-
 
 
 
@@ -664,7 +669,7 @@ class DetailedSignUpPage(QWidget):
 # The Front Desk Dashboard contains all the widgets needed for the staff to operate their task.
 # The top section is for registering new tenants, the bottom section is for managing existing tenants.
 
-class FrontDeskDashboard(QWidget):
+class FrontDeskDashboard(userPage):
     def __init__(self):
         super().__init__()
         self.resize(831, 581)
@@ -724,8 +729,6 @@ class FrontDeskDashboard(QWidget):
         self.passwordInput.setGeometry(QRect(20, 170, 113, 21))
 
         self.retranslateUi()
-
-        QMetaObject.connectSlotsByName(self)
     # setupUi
 
     def retranslateUi(self):
@@ -774,6 +777,7 @@ class FrontDeskDashboard(QWidget):
         self.nationalInsuranceInput.clear()
         self.occupationDropdown.setCurrentIndex(0)
         return tenant
+    
 
 #endregion
 
@@ -814,7 +818,7 @@ class PieChart(QChartView):
 
 
 
-class FinanceDashboard(QWidget):
+class FinanceDashboard(userPage):
     def __init__(self):
         super().__init__()
         self.resize(831, 581)
@@ -1101,7 +1105,7 @@ class FinanceDashboard(QWidget):
 
 
 #region Admin Dashboard
-class AdminDashboard(QWidget):
+class AdminDashboard(userPage):
     def __init__(self):
         super().__init__()
         self.resize(832, 591)
