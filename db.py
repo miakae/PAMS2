@@ -303,7 +303,7 @@ def GetUsersFromLocation(locationName: str):
         return None
 
 
-#TODO not finished and ineffcient due to databse
+#TODO not finished and ineffcient due to database
 def GetTenantsFromLocation(locationName : str):
     return None
     # location = GetLocation(locationName)

@@ -18,7 +18,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         self.setMaximumSize(self.size())
     #region Testing Section
     #This section is used test functionality, quick testing and debugging. 
-    
+        #self.switchToFinanceDashboard()
         #Testing Page
         self.TestingPage.testBtn1.clicked.connect(lambda : self.MakePieChartUnoccupied("Madrid"))
         self.TestingPage.testBtn2.clicked.connect(lambda : self.MakePieChartUnoccupied("London"))
@@ -49,10 +49,11 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         #endregion
 
         #Admin Dashboard
-        #self.AdminDash.userLocationDropdown.currentIndexChanged.connect(lambda : self.AdminDash.userTable.UpdateTable(GetTenants(),GetHeaders("tenants")))
+        self.AdminDash.userLocationDropdown.currentIndexChanged.connect(lambda : self.AdminDash.CreateUserTable(GetUsersFromLocation(self.AdminDash.userLocationDropdown.currentText()),GetHeaders("users"),[], []))
         self.AdminDash.userRefreshBtn.clicked.connect(lambda : self.AdminDash.CreateUserTable(GetUsersFromLocation(self.AdminDash.userLocationDropdown.currentText()),GetHeaders("users"),[], []))
         self.AdminDash.apartmentLocationDropdown.currentIndexChanged.connect(lambda : self.AdminDash.CreateApartmentTable(GetApartmentsFromLocation(GetLocation(self.AdminDash.apartmentLocationDropdown.currentText()).GetID()), GetHeaders("apartments")))
         self.AdminDash.apartmentRefresh.clicked.connect(lambda : self.AdminDash.CreateApartmentTable(GetApartmentsFromLocation(GetLocation(self.AdminDash.apartmentLocationDropdown.currentText()).GetID()), GetHeaders("apartments")))
+        self.AdminDash.reportLocationDropdown.currentIndexChanged.connect(lambda : [self.AdminDash.CreateOccupancyLevels(self.MakePieChartUnoccupied(self.AdminDash.reportLocationDropdown.currentText())), self.AdminDash.CreateMaintenance(self.MakeMaintanenceRequestsPieChart(self.AdminDash.reportLocationDropdown.currentText()))]) #TODO Create a function that updates both graphs at the same time
         #region Page Functions
 # This section is responsible for the functions that switch the pages and that load the data into these pages.
     def switchWelcomePage(self):
@@ -93,7 +94,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         self.FrontDeskDash.searchBar.textChanged.connect(lambda : self.FrontDeskDash.tenantTable.search(self.FrontDeskDash.searchBar.text()))
     def switchToFinanceDashboard(self):
         self.stackedView.setCurrentIndex(8)
-        self.FinanceDash.paymentTable.UpdateTable()
+        self.FinanceDash.paymentTable.UpdateTable((),())
         self.FinanceDash.CreateOccupancyLevels(self.MakePieChartUnoccupied("London")) # Add specifc location for the user
         self.FinanceDash.CreateMaintenance(self.MakeMaintanenceRequestsPieChart("London")) # Add specifc location for the user
 #endregion

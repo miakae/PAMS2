@@ -1164,6 +1164,8 @@ class AdminDashboard(QWidget):
         self.graphsStackedWidget = QStackedWidget(self.Graphs)
         self.graphsStackedWidget.setObjectName(u"graphsStackedWidget")
         self.graphsStackedWidget.setGeometry(QRect(10, 60, 391, 291))
+        self.verticalLayout = QVBoxLayout(self.Graphs)
+        self.verticalLayout.setObjectName(u"verticalLayout")
         self.Occupancy = PieChart((),(), "Occupancy Levels")
         self.Occupancy.setObjectName(u"Occupancy")
         self.graphsStackedWidget.addWidget(self.Occupancy)
@@ -1174,6 +1176,7 @@ class AdminDashboard(QWidget):
         self.CollectionRate.setObjectName(u"CollectionRate")
         self.graphsStackedWidget.addWidget(self.CollectionRate)
 
+
         #region Graph Buttons
         self.btnGroup = QFrame(self.Graphs)
         self.btnGroup.setObjectName(u"btnGroup")
@@ -1182,6 +1185,30 @@ class AdminDashboard(QWidget):
         self.btnGroup.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout = QHBoxLayout(self.btnGroup)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.verticalLayout.addWidget(self.btnGroup)
+
+        self.dropdownMenu = QFrame(self.Graphs)
+        self.dropdownMenu.setObjectName(u"dropdownMenu")
+        self.dropdownMenu.setFrameShape(QFrame.Shape.StyledPanel)
+        self.dropdownMenu.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_11 = QHBoxLayout(self.dropdownMenu)
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.horizontalSpacer = QSpacerItem(300, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_11.addItem(self.horizontalSpacer)
+
+        self.reportLocationDropdown = QComboBox(self.dropdownMenu)
+        self.reportLocationDropdown.setObjectName(u"reportLocationDropdown")
+
+        self.horizontalLayout_11.addWidget(self.reportLocationDropdown)
+
+        self.horizontalSpacer_2 = QSpacerItem(300, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_11.addItem(self.horizontalSpacer_2)
+
+
+        self.verticalLayout.addWidget(self.dropdownMenu)
+        self.verticalLayout.addWidget(self.graphsStackedWidget)
 
         #Occupancy Report Button
         self.occupancyBtn = QPushButton(self.btnGroup)
@@ -1508,6 +1535,7 @@ class AdminDashboard(QWidget):
         for location in locations:
             self.userLocationDropdown.addItem(location.location_name)
             self.apartmentLocationDropdown.addItem(location.location_name)
+            self.reportLocationDropdown.addItem(location.location_name)
     
     def CreateUserTable(self, staffRecords, staffHeaders, tenantRecords, tenantHeaders ):
         self.staffBtn.setChecked(True)
