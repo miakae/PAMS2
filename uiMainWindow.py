@@ -29,12 +29,47 @@ class Ui_MainWindow(object):
         MainWindow.resize(843, 634)
         self.View = QWidget(MainWindow)
         self.View.setObjectName(u"View")
-        self.stackedView = QStackedWidget(self.View)
+        self.frame = QFrame(self.View)
+        self.frame.setObjectName(u"frame")
+        self.frame.setGeometry(QRect(0, 0, 843, 634))
+        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout = QVBoxLayout(self.frame)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.toolBar = QFrame(self.frame)
+        self.toolBar.setObjectName(u"toolBar")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.toolBar.sizePolicy().hasHeightForWidth())
+        self.toolBar.setSizePolicy(sizePolicy)
+        self.toolBar.setMaximumSize(QSize(843, 53))
+        self.toolBar.setFrameShape(QFrame.Shape.StyledPanel)
+        self.toolBar.setFrameShadow(QFrame.Shadow.Raised)
+        self.pushButton = QPushButton(self.toolBar)
+        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setGeometry(QRect(740, 0, 79, 24))
+
+        self.verticalLayout.addWidget(self.toolBar)
+
+        self.content = QFrame(self.frame)
+        self.content.setObjectName(u"content")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.content.sizePolicy().hasHeightForWidth())
+        self.content.setSizePolicy(sizePolicy1)
+        self.content.setMaximumSize(QSize(16777215, 581))
+        self.content.setFrameShape(QFrame.Shape.StyledPanel)
+        self.content.setFrameShadow(QFrame.Shadow.Raised)
+        self.stackedView = QStackedWidget(self.content)
         self.stackedView.setObjectName(u"stackedView")
-        self.stackedView.setGeometry(QRect(10, -2, 831, 581))
-        self.stackedView.setMouseTracking(False)
-        self.stackedView.setFrameShadow(QFrame.Shadow.Plain)
-        self.stackedView.setLineWidth(0)
+        self.stackedView.setGeometry(QRect(0, 0, 823, 581))
+        sizePolicy.setHeightForWidth(self.stackedView.sizePolicy().hasHeightForWidth())
+        self.stackedView.setSizePolicy(sizePolicy)
+
+        self.verticalLayout.addWidget(self.content)
+        
 
         #region Page 1 Welcome
         self.Welcome = WelcomePage()
@@ -47,12 +82,12 @@ class Ui_MainWindow(object):
         #endregion
 
         #region Page 3 Admin
-        self.AdminLogin = AdminLoginPage()
-        self.stackedView.addWidget(self.AdminLogin)
+        self.StaffLogin = AdminLoginPage()
+        self.stackedView.addWidget(self.StaffLogin)
         #endregion
 
         #region Page 4 Customer Dashboard
-        self.CustDash = Dashboard()
+        self.CustDash = TenantDashboard()
         self.stackedView.addWidget(self.CustDash)
 
         #endregion
@@ -100,13 +135,14 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Back", None))
 
         #retranslate ui for the pages
         self.Welcome.retranslateUi()
 
         self.CustLogin.retranslateUi()
 
-        self.AdminLogin.retranslateUi()
+        self.StaffLogin.retranslateUi()
 
         self.CustDash.retranslateUi()
 
@@ -118,5 +154,8 @@ class Ui_MainWindow(object):
         
         self.FrontDeskDash.retranslateUi()
 
+        self.FinanceDash.retranslateUi()
+
+        self.AdminDash.retranslateUi()
     # retranslateUi
 

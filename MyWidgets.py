@@ -6,6 +6,7 @@ from PySide6.QtCore import *
 from PySide6.QtCharts import *
 from ErrorBoxes import ErrorBox
 from Entities import *
+from tenantPage import *
 
 #region Fonts
 
@@ -36,7 +37,8 @@ class userPage(QWidget):
         self.user = None
     def setUser(self, user: IEntity):
         self.user = user
-
+    def logoutUser(self):
+        self.setUser(None)
 #endregion
 
 #In order to have an efficient and scalable app pages will be seperated into individual widgets
@@ -439,6 +441,100 @@ class Dashboard(userPage):
     
 
 
+class TenantDashboard(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.tenant = Tenant("","","", "", "", "", "", "","")
+
+        self.resize(831, 758)
+
+        #Title Section
+        self.verticalLayout_2 = QVBoxLayout(self)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.titleSection = QFrame()
+        self.titleSection.setObjectName(u"titleSection")
+        self.titleSection.setFrameShape(QFrame.Shape.StyledPanel)
+        self.titleSection.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_2 = QHBoxLayout(self.titleSection)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.title = QLabel(self.titleSection)
+        self.title.setObjectName(u"title")
+        self.horizontalLayout_2.addWidget(self.title, 0, Qt.AlignmentFlag.AlignHCenter)
+        self.verticalLayout_2.addWidget(self.titleSection)
+
+        #Tabs
+        self.tabSection = QFrame()
+        self.tabSection.setObjectName(u"tabSection")
+        self.tabSection.setFrameShape(QFrame.Shape.StyledPanel)
+        self.tabSection.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout = QHBoxLayout(self.tabSection)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+
+        self.overviewBtn = QPushButton(self.tabSection)
+        self.overviewBtn.setObjectName(u"overviewBtn")
+        self.horizontalLayout.addWidget(self.overviewBtn)
+
+        self.paymentsBtn = QPushButton(self.tabSection)
+        self.paymentsBtn.setObjectName(u"paymentsBtn")
+        self.horizontalLayout.addWidget(self.paymentsBtn)
+
+        self.maintanenceBtn = QPushButton(self.tabSection)
+        self.maintanenceBtn.setObjectName(u"maintanenceBtn")
+        self.horizontalLayout.addWidget(self.maintanenceBtn)
+
+        self.horizontalSpacer = QSpacerItem(533, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+        self.verticalLayout_2.addWidget(self.tabSection)
+
+
+        #Main Content
+        self.mainSection = QStackedWidget()
+        self.mainSection.setObjectName(u"mainSection")
+        self.mainSection.setFrameShape(QFrame.Shape.StyledPanel)
+        self.mainSection.setFrameShadow(QFrame.Shadow.Raised)
+
+        #Overview Page
+        self.OverviewPage = TenantOverviewPage()
+        self.mainSection.addWidget(self.OverviewPage)
+                
+        self.paymentsPage = TenantPaymentsPage()
+        self.mainSection.addWidget(self.paymentsPage)
+    
+
+        self.verticalLayout_2.addWidget(self.mainSection)
+
+        #Connections
+
+        self.overviewBtn.clicked.connect(lambda: self.switchToOverviewPage())
+        self.paymentsBtn.clicked.connect(lambda: self.switchToPaymentsPage())
+
+        self.mainSection.setCurrentIndex(0)
+        self.retranslateUi()
+
+    # setupUi
+
+    def retranslateUi(self):
+        self.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
+        self.title.setText(QCoreApplication.translate("Form", u"Tenant Dashboard", None))
+        self.overviewBtn.setText(QCoreApplication.translate("Form", u"Overview", None))
+        self.paymentsBtn.setText(QCoreApplication.translate("Form", u"Payments", None))
+        self.maintanenceBtn.setText(QCoreApplication.translate("Form", u"Maintanence", None))
+        self.OverviewPage.retranslateUi()
+        self.paymentsPage.retranslateUi()
+       
+    # retranslateUi
+
+    def setUser(self, tenant : Tenant):
+        self.tenant = tenant
+        self.OverviewPage.UpdateTenantInfomation(self.tenant.first_name,"Not yet implmented", "£NOT YET IMPLMENTED", "not yet implemented" , "Not yet implmentedf" ,"not yet implemented")
+    def clearUser(self, tenat: Tenant):
+        self.tenant = Tenant("","","", "", "", "", "", "","")
+        self.OverviewPage.UpdateTenantInfomation
+    def switchToPaymentsPage(self):
+        self.mainSection.setCurrentIndex(1)
+    def switchToOverviewPage(self):
+        self.mainSection.setCurrentIndex(0)
+        
 
 #endregion
 
@@ -466,11 +562,12 @@ class Table(QTableWidget):
                 self.setItem(x,y,QTableWidgetItem(str(record[y])))
     
     def search(self, string : str):
-        matches = self.findItems(string,Qt.MatchFlag.MatchContains)
-        for rows in range(0,self.rowCount()):
-            self.hideRow(rows)
-        for match in matches:
-            self.showRow(match.row())
+        if string is not "":
+            matches = self.findItems(string,Qt.MatchFlag.MatchContains)
+            for rows in range(0,self.rowCount()):
+                self.hideRow(rows)
+            for match in matches:
+                self.showRow(match.row())
 
 
     def UpdateTable(self, records, headers):
@@ -681,9 +778,7 @@ class FrontDeskDashboard(userPage):
         self.manageTenants = QGroupBox(self)
         self.manageTenants.setObjectName(u"manageTenants")
         self.manageTenants.setGeometry(QRect(40, 320, 731, 241))
-        self.errorMessage_2 = QWidget(self.manageTenants)
-        self.errorMessage_2.setObjectName(u"errorMessage_2")
-        self.errorMessage_2.setGeometry(QRect(480, 80, 231, 141))
+
 
         #Tenant Table and Search Bar
         self.tenantTable = Table([],[])
@@ -693,6 +788,7 @@ class FrontDeskDashboard(userPage):
         self.searchBar = QLineEdit(self.manageTenants)
         self.searchBar.setObjectName(u"searchBar")
         self.searchBar.setGeometry(QRect(610, 10, 113, 22))
+
 
 
         #Registering tenants section
@@ -727,6 +823,11 @@ class FrontDeskDashboard(userPage):
         self.passwordInput = QLineEdit(self.registerTenants)
         self.passwordInput.setObjectName(u"passwordInput")
         self.passwordInput.setGeometry(QRect(20, 170, 113, 21))
+
+
+        #Connections
+
+        self.searchBar.textChanged.connect(lambda : self.tenantTable.search(self.searchBar.text()))
 
         self.retranslateUi()
     # setupUi
@@ -1559,7 +1660,11 @@ class AdminDashboard(userPage):
         self.apartmentTable.UpdateTable(apartments, apartmentHeaders)
         self.apartmentTable.setParent(self.apartmentManage)
 
-    #TODO Add tables to user and apartment. Fixed title for reports page. Import locations
+    #TODO Add Tenant table
+    #TODO Make faster for db requests
     #TODO MAKE IT EASIER TOP MAKE REQUIRE TABLES AND NOT REUSE CODE
 
 #endregion
+
+
+#region  
