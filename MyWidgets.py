@@ -2,8 +2,10 @@ import sys
 import random
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
-from PySide6.QtCore import * 
+from PySide6.QtCore import *
+from PySide6.QtCharts import *
 from ErrorBoxes import ErrorBox
+from Entities import *
 
 #region Fonts
 
@@ -36,6 +38,7 @@ heading2.setPointSize(18)
 
 #region Welcome Page
 
+# The welcome page consists of a title and buttons that lead to the tenant and staff portals respectively
 class WelcomePage(QWidget):
     def __init__(self):
         super().__init__()
@@ -74,7 +77,7 @@ class WelcomePage(QWidget):
 
 
 #region Customer Login
-
+# The customer login page contains a email and password input section and a submit button
 class CustomerLoginPage(QWidget):
         def __init__(self):
             super().__init__()
@@ -158,6 +161,7 @@ class CustomerLoginPage(QWidget):
 
 #region Sign Up Page
 
+# The Sign Up Page consists of a title and a email input. It also has a submit button
 class SignUpPage(QWidget):
     def __init__(self):
         super().__init__()
@@ -289,20 +293,13 @@ class AdminLoginPage(QWidget):
 
 #region Client Dashboard
 
-# -*- coding: utf-8 -*-
-
-################################################################################
-## Form generated from reading UI file 'dashboardXBxFzf.ui'
-##
-## Created by: Qt User Interface Compiler version 6.10.1
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
-
-# Dashboard is a page the client dashboard widgets including the following:
-# A side bar with Account, Lease, Payments and Complaints buttons
-# A stacked widget that contains the corrosponding pages to these buttons
-# The pages inside will have database connectivity to collect the infomation
+# The client dashboard contains a side bar that controls a stackwidget that switches the sections currently being looked at.
+# The default page - what the user is greeted with after they login
+# The Account Page - Where the user will view and edit their personal infomation
+# The Lease Page - Where the user can track their lease agreement
+# The Payment Page - Where the user will make any outstanding payments
+# The complaint Page - Where the user will submit complaints
+# The buttons are automatically connected so no need to connect them at run time 
 
 class Dashboard(QWidget):
         def __init__(self):
@@ -443,11 +440,12 @@ class Dashboard(QWidget):
 #region Database Widgets
 
 
-class Table(QTableWidget):
-    def __init__(self, records, headers):
+
+# The Table class takes list of IEntity objects and a list of headers and populates a table.
+# The table also incluedes a search function that is not case sensitive hides all data that does not match.
+class Table(QTableWidget):  
+    def __init__(self, records : list[IEntity], headers):
         super().__init__()
-        print(len(headers))
-        print(len(records))
         lenHeader = len(headers)
         lenRecords = len(records)
         self.setColumnCount(lenHeader)
@@ -456,9 +454,11 @@ class Table(QTableWidget):
         for header in range(0,lenHeader):
             self.setHorizontalHeaderItem(header,QTableWidgetItem(str(headers[header][0])))
         
-        for x in range(0, lenRecords):
-            for y in range(0,len(records[x])):
-                self.setItem(x,y,QTableWidgetItem(str(records[x][y])))
+        # Converts the database format of the records into table
+        for x in range(len(records)):
+            record = records[x].GetDataBaseFormat()
+            for y in range(0,len(record)):
+                self.setItem(x,y,QTableWidgetItem(str(record[y])))
     
     def search(self, string : str):
         matches = self.findItems(string,Qt.MatchFlag.MatchContains)
@@ -467,6 +467,23 @@ class Table(QTableWidget):
         for match in matches:
             self.showRow(match.row())
 
+
+    def UpdateTable(self, records, headers):
+        self.clear()
+        lenHeader = len(headers)
+        lenRecords = len(records)
+        self.setColumnCount(lenHeader)
+        self.setRowCount(lenRecords)
+        self.verticalHeader().setVisible(False)
+        for header in range(0,lenHeader):
+            self.setHorizontalHeaderItem(header,QTableWidgetItem(str(headers[header][0])))
+        
+        # Converts the database format of the records into table
+        for x in range(len(records)):
+            record = records[x].GetDataBaseFormat()
+            for y in range(0,len(record)):
+                self.setItem(x,y,QTableWidgetItem(str(record[y])))
+        
 
         
 
@@ -516,6 +533,7 @@ class TestPage(QWidget):
 
 
 #region Detailed Sign Up Page
+
 
 class DetailedSignUpPage(QWidget):
     def __init__(self):
@@ -642,64 +660,72 @@ class DetailedSignUpPage(QWidget):
 #endregion
 
 #region Front Desk Dashboard
+
+# The Front Desk Dashboard contains all the widgets needed for the staff to operate their task.
+# The top section is for registering new tenants, the bottom section is for managing existing tenants.
+
 class FrontDeskDashboard(QWidget):
     def __init__(self):
         super().__init__()
         self.resize(831, 581)
         self.title = QLabel(self)
         self.title.setObjectName(u"title")
-        self.title.setGeometry(QRect(330, 30, 118, 16))
+        self.title.setGeometry(QRect(350, 20, 118, 16))
+        self.manageTenants = QGroupBox(self)
+        self.manageTenants.setObjectName(u"manageTenants")
+        self.manageTenants.setGeometry(QRect(40, 320, 731, 241))
+        self.errorMessage_2 = QWidget(self.manageTenants)
+        self.errorMessage_2.setObjectName(u"errorMessage_2")
+        self.errorMessage_2.setGeometry(QRect(480, 80, 231, 141))
+        self.tenantTable = Table([],[])
+        self.tenantTable.setParent(self.manageTenants)
+        self.tenantTable.setObjectName(u"tenantTable")
+        self.tenantTable.setGeometry(QRect(10, 30, 711, 201))
+        self.searchBar = QLineEdit(self.manageTenants)
+        self.searchBar.setObjectName(u"searchBar")
+        self.searchBar.setGeometry(QRect(610, 10, 113, 22))
         self.registerTenants = QGroupBox(self)
         self.registerTenants.setObjectName(u"registerTenants")
-        self.registerTenants.setGeometry(QRect(10, 50, 731, 241))
+        self.registerTenants.setGeometry(QRect(40, 50, 731, 241))
         self.firstNameInput = QLineEdit(self.registerTenants)
         self.firstNameInput.setObjectName(u"firstNameInput")
         self.firstNameInput.setGeometry(QRect(20, 40, 113, 21))
         self.lastNameInput = QLineEdit(self.registerTenants)
         self.lastNameInput.setObjectName(u"lastNameInput")
-        self.lastNameInput.setGeometry(QRect(20, 130, 113, 21))
+        self.lastNameInput.setGeometry(QRect(20, 80, 113, 21))
         self.emailInput = QLineEdit(self.registerTenants)
         self.emailInput.setObjectName(u"emailInput")
-        self.emailInput.setGeometry(QRect(20, 200, 113, 21))
+        self.emailInput.setGeometry(QRect(20, 120, 113, 21))
         self.nationalInsuranceInput = QLineEdit(self.registerTenants)
         self.nationalInsuranceInput.setObjectName(u"nationalInsuranceInput")
-        self.nationalInsuranceInput.setGeometry(QRect(270, 40, 161, 21))
+        self.nationalInsuranceInput.setGeometry(QRect(410, 50, 161, 21))
         self.phoneNumberInput = QLineEdit(self.registerTenants)
         self.phoneNumberInput.setObjectName(u"phoneNumberInput")
-        self.phoneNumberInput.setGeometry(QRect(270, 130, 161, 21))
+        self.phoneNumberInput.setGeometry(QRect(410, 110, 161, 21))
         self.occupationDropdown = QComboBox(self.registerTenants)
         self.occupationDropdown.addItem("")
         self.occupationDropdown.addItem("")
         self.occupationDropdown.addItem("")
         self.occupationDropdown.addItem("")
         self.occupationDropdown.setObjectName(u"occupationDropdown")
-        self.occupationDropdown.setGeometry(QRect(260, 200, 171, 26))
+        self.occupationDropdown.setGeometry(QRect(410, 170, 171, 26))
         self.submitButton = QPushButton(self.registerTenants)
         self.submitButton.setObjectName(u"submitButton")
-        self.submitButton.setGeometry(QRect(560, 40, 81, 26))
-        self.errorMessage = QWidget(self.registerTenants)
-        self.errorMessage.setObjectName(u"errorMessage")
-        self.errorMessage.setGeometry(QRect(480, 80, 231, 141))
-        self.manageTenants = QGroupBox(self)
-        self.manageTenants.setObjectName(u"manageTenants")
-        self.manageTenants.setGeometry(QRect(10, 320, 731, 241))
-        self.errorMessage_2 = QWidget(self.manageTenants)
-        self.errorMessage_2.setObjectName(u"errorMessage_2")
-        self.errorMessage_2.setGeometry(QRect(480, 80, 231, 141))
-        self.tenantTable = QTableWidget(self.manageTenants)
-        self.tenantTable.setObjectName(u"tenantTable")
-        self.tenantTable.setGeometry(QRect(10, 30, 711, 201))
-        self.tenantTable.setMaximumSize(10, 30)
-        self.searchBar = QLineEdit(self.manageTenants)
-        self.searchBar.setObjectName(u"searchBar")
-        self.searchBar.setGeometry(QRect(610, 10, 113, 22))
+        self.submitButton.setGeometry(QRect(600, 200, 81, 26))
+        self.passwordInput = QLineEdit(self.registerTenants)
+        self.passwordInput.setObjectName(u"passwordInput")
+        self.passwordInput.setGeometry(QRect(20, 170, 113, 21))
 
+        self.retranslateUi()
 
+        QMetaObject.connectSlotsByName(self)
     # setupUi
 
     def retranslateUi(self):
         self.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
         self.title.setText(QCoreApplication.translate("Form", u"Front Desk Dashboard", None))
+        self.manageTenants.setTitle(QCoreApplication.translate("Form", u"Manage Tenants", None))
+        self.searchBar.setPlaceholderText(QCoreApplication.translate("Form", u"Search", None))
         self.registerTenants.setTitle(QCoreApplication.translate("Form", u"Register Tenants", None))
         self.firstNameInput.setPlaceholderText(QCoreApplication.translate("Form", u"First Name", None))
         self.lastNameInput.setText("")
@@ -712,22 +738,531 @@ class FrontDeskDashboard(QWidget):
         self.phoneNumberInput.setPlaceholderText(QCoreApplication.translate("Form", u"Phone Number", None))
         self.occupationDropdown.setItemText(0, QCoreApplication.translate("Form", u"Student", None))
         self.occupationDropdown.setItemText(1, QCoreApplication.translate("Form", u"Unemployed", None))
-        self.occupationDropdown.setItemText(2, QCoreApplication.translate("Form", u"Full-Time Employed", None))
-        self.occupationDropdown.setItemText(3, QCoreApplication.translate("Form", u"Part-Time Employed", None))
+        self.occupationDropdown.setItemText(2, QCoreApplication.translate("Form", u"Employed", None))
+        self.occupationDropdown.setItemText(3, QCoreApplication.translate("Form", u"Part-Time", None))
 
         self.occupationDropdown.setPlaceholderText(QCoreApplication.translate("Form", u"Occupation", None))
         self.submitButton.setText(QCoreApplication.translate("Form", u"Submit", None))
-        self.manageTenants.setTitle(QCoreApplication.translate("Form", u"Manage Tenants", None))
-        self.searchBar.setPlaceholderText(QCoreApplication.translate("Form", u"Search", None))
+        self.passwordInput.setText("")
+        self.passwordInput.setPlaceholderText(QCoreApplication.translate("Form", u"Password", None))
     # retranslateUi
 
-    def UpdateTenants(self, records, headers):
-        self.tenantTable = Table(records,headers)
-        self.tenantTable.setParent(self.manageTenants)
-        self.tenantTable.setObjectName(u"tenantTable")
-        self.tenantTable.setGeometry(QRect(10, 30, 711, 201))
+
+        
+    def Submit(self):
+        fName = self.firstNameInput.text()
+        lName = self.lastNameInput.text()
+        email = self.emailInput.text()
+        password = self.passwordInput.text()
+        phoneNumber = self.phoneNumberInput.text() #TODO phonenumber checking is valid phone number
+        nationalInsurance = self.nationalInsuranceInput.text()
+        occupation = self.occupationDropdown.currentText()
+        references = ""
+        tenant = Tenant(-1,fName,lName,email,password,phoneNumber,nationalInsurance,occupation ,references )
+        self.firstNameInput.clear()
+        self.lastNameInput.clear()
+        self.emailInput.clear()
+        self.passwordInput.clear()
+        self.phoneNumberInput.clear()
+        self.nationalInsuranceInput.clear()
+        self.occupationDropdown.setCurrentIndex(0)
+        return tenant
+
+#endregion
+
+
+
+#region Graph Generation
+
+class BarChart(QBarSeries):
+    def __init__(self):
+        super().__init__()
+
+#endregion
+
+#Labels contains the names of the different type of data and numData contains the number of entrys for each label
+class PieChart(QChartView):
+    def __init__(self, labels : tuple , numData : tuple , title : str):
+        super().__init__()
+        chart = QChart()
+        self.pieChart = QPieSeries()
+        for i in range(0, len(labels)):
+            self.pieChart.append(labels[i],numData[i])
+        chart.addSeries(self.pieChart)
+        chart.setTitle(title)
+
+        self.setChart(chart)
         
 
+#Pie for occupancy levels vs unoccupied in aprtment and then in city
+
+#Pie of oustandinf payments vs collected
+
+#entension add a prediction method
+
+#TODO CREATE A PIE GRAPH FOR OUTSTANDING VERSES COLLECTED PAYMENTS 
+#TODO CREATE A LINE GRAPH FOR THE EPENSES PER WEEK/ MONTH / YEAR FROM MAINTANENCE
+
+#region Finance Dashboard
 
 
 #endregion
+
+class FinanceDashboard(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.resize(831, 581)
+
+        #region Title
+        self.titleFrame = QFrame(self)
+        self.titleFrame.setObjectName(u"titleFrame")
+        self.titleFrame.setGeometry(QRect(0, 10, 831, 91))
+        self.titleFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.titleFrame.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_2 = QHBoxLayout(self.titleFrame)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label = QLabel(self.titleFrame)
+        self.label.setObjectName(u"label")
+        self.label.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.horizontalLayout_2.addWidget(self.label)
+        #endregion
+
+
+        #Region Main Content
+        self.stackedWidget = QStackedWidget(self)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.stackedWidget.setGeometry(QRect(10, 110, 811, 461))
+        #endregion
+
+
+        #region Tabs
+        self.tabs = QFrame(self)
+        self.tabs.setObjectName(u"tabs")
+        self.tabs.setGeometry(QRect(0, 100, 831, 41))
+        self.tabs.setFrameShape(QFrame.Shape.StyledPanel)
+        self.tabs.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_8 = QHBoxLayout(self.tabs)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+
+        # Payment Tab Button
+        self.paymentsBtn = QPushButton(self.tabs)
+        self.paymentsBtn.setObjectName(u"paymentsBtn")
+        self.horizontalLayout_8.addWidget(self.paymentsBtn)
+
+        # Invoice Tab Button
+        self.invoicesBtn = QPushButton(self.tabs)
+        self.invoicesBtn.setObjectName(u"invoicesBtn")
+        self.horizontalLayout_8.addWidget(self.invoicesBtn)
+
+        # Report Tab Button
+        self.reportBtn = QPushButton(self.tabs)
+        self.reportBtn.setObjectName(u"reportBtn")
+        self.horizontalLayout_8.addWidget(self.reportBtn)
+        #endregion
+
+        #region Pages
+        #region Report Page
+        self.ReportPage = QWidget()
+        self.ReportPage.setObjectName(u"ReportPage")
+        self.Graphs = QFrame(self.ReportPage)
+        self.Graphs.setObjectName(u"Graphs")
+        self.Graphs.setGeometry(QRect(180, 50, 411, 361))
+        self.Graphs.setFrameShape(QFrame.Shape.StyledPanel)
+        self.Graphs.setFrameShadow(QFrame.Shadow.Raised)
+        self.graphsStackedWidget = QStackedWidget(self.Graphs)
+        self.graphsStackedWidget.setObjectName(u"graphsStackedWidget")
+        self.graphsStackedWidget.setGeometry(QRect(10, 60, 391, 291))
+        self.Occupancy = PieChart((),(), "Occupancy Levels")
+        self.Occupancy.setObjectName(u"Occupancy")
+        self.graphsStackedWidget.addWidget(self.Occupancy)
+        self.MaintenceCost = PieChart((),(), "Maintenance Costs")
+        self.MaintenceCost.setObjectName(u"MaintenceCost")
+        self.graphsStackedWidget.addWidget(self.MaintenceCost)
+        self.CollectionRate = PieChart((),(), "Collection Rates")
+        self.CollectionRate.setObjectName(u"CollectionRate")
+        self.graphsStackedWidget.addWidget(self.CollectionRate)
+        self.btnGroup = QFrame(self.Graphs)
+        self.btnGroup.setObjectName(u"btnGroup")
+        self.btnGroup.setGeometry(QRect(10, 10, 391, 44))
+        self.btnGroup.setFrameShape(QFrame.Shape.StyledPanel)
+        self.btnGroup.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout = QHBoxLayout(self.btnGroup)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.occupancyBtn = QPushButton(self.btnGroup)
+        self.occupancyBtn.setObjectName(u"occupancyBtn")
+
+        self.horizontalLayout.addWidget(self.occupancyBtn)
+
+        self.collectionBtn = QPushButton(self.btnGroup)
+        self.collectionBtn.setObjectName(u"collectionBtn")
+        self.collectionBtn.setDisabled(True) #TODO Graph has no implmentation yet so disable button for now
+
+        self.horizontalLayout.addWidget(self.collectionBtn)
+
+        self.maintenanceBtn = QPushButton(self.btnGroup)
+        self.maintenanceBtn.setObjectName(u"maintenanceBtn")
+
+        self.horizontalLayout.addWidget(self.maintenanceBtn)
+        
+        self.stackedWidget.addWidget(self.ReportPage)
+        #endregion
+        
+        #region Invoice Page
+        self.InvoicePage = QWidget()
+        self.InvoicePage.setObjectName(u"InvoicePage")
+        
+
+        #Title
+        self.invoiceFrame = QFrame(self.InvoicePage)
+        self.invoiceFrame.setObjectName(u"invoiceFrame")
+        self.invoiceFrame.setGeometry(QRect(10, 20, 791, 431))
+        self.invoiceFrame.setFrameShape(QFrame.Shape.StyledPanel)
+
+        self.invoiceTitleBar = QFrame(self.invoiceFrame)
+        self.invoiceTitleBar.setObjectName(u"invoiceTitleBar")
+        self.invoiceTitleBar.setGeometry(QRect(5, 5, 781, 51))
+        self.invoiceTitleBar.setFrameShape(QFrame.Shape.StyledPanel)
+        self.invoiceTitleBar.setFrameShadow(QFrame.Shadow.Raised)
+
+        self.horizontalLayout_7 = QHBoxLayout(self.invoiceTitleBar)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+
+        self.invoiceTitle = QLabel(self.invoiceTitleBar)
+        self.invoiceTitle.setObjectName(u"label_3")
+        self.invoiceTitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.horizontalLayout_7.addWidget(self.invoiceTitle)
+
+        self.createInvoice = QFrame(self.invoiceFrame)
+        self.createInvoice.setObjectName(u"createInvoice")
+        self.createInvoice.setGeometry(QRect(10, 60, 771, 361))
+        self.createInvoice.setFrameShape(QFrame.Shape.StyledPanel)
+        self.createInvoice.setFrameShadow(QFrame.Shadow.Raised)
+        self.stackedWidget.addWidget(self.InvoicePage)
+        #endregion
+        
+        #region Payment Page
+        self.PaymentPage = QWidget()
+        self.PaymentPage.setObjectName(u"PaymentPage")
+        
+        
+        
+        self.managePayments = QGroupBox(self.PaymentPage)
+        self.managePayments.setObjectName(u"managePayments")
+        self.managePayments.setGeometry(QRect(20, 30, 771, 431))
+
+        #Table
+        self.paymentTable = Table([],[])
+        self.paymentTable.setParent(self.managePayments)
+        self.paymentTable.setObjectName(u"tenantTable")
+        self.paymentTable.setGeometry(QRect(10, 50, 751, 371))
+        self.tableBar = QFrame(self.managePayments)
+        self.tableBar.setObjectName(u"tableBar")
+        self.tableBar.setGeometry(QRect(10, 5, 751, 46))
+        self.tableBar.setFrameShape(QFrame.Shape.StyledPanel)
+        self.tableBar.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_4 = QHBoxLayout(self.tableBar)
+        self.horizontalLayout_4.setSpacing(0)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.tableTitle = QFrame(self.tableBar)
+        self.tableTitle.setObjectName(u"tableTitle")
+        self.tableTitle.setFrameShape(QFrame.Shape.StyledPanel)
+        self.tableTitle.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_6 = QHBoxLayout(self.tableTitle)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.title = QLabel(self.tableTitle)
+        self.title.setObjectName(u"title")
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_6.addWidget(self.title)
+        self.horizontalLayout_4.addWidget(self.tableTitle)
+
+
+        #Tool Bar
+        self.toolBar = QFrame(self.tableBar)
+        self.toolBar.setObjectName(u"toolBar")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.toolBar.sizePolicy().hasHeightForWidth())
+        self.toolBar.setSizePolicy(sizePolicy)
+        self.toolBar.setFrameShape(QFrame.Shape.StyledPanel)
+        self.toolBar.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_5 = QHBoxLayout(self.toolBar)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.latePaymentsBtn = QPushButton(self.toolBar)
+        self.latePaymentsBtn.setObjectName(u"latePaymentsBtn")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.latePaymentsBtn.sizePolicy().hasHeightForWidth())
+        self.latePaymentsBtn.setSizePolicy(sizePolicy1)
+        self.horizontalLayout_5.addWidget(self.latePaymentsBtn)
+
+        self.refreshBtn = QPushButton(self.toolBar)
+        self.refreshBtn.setObjectName(u"refreshBtn")
+        sizePolicy1.setHeightForWidth(self.refreshBtn.sizePolicy().hasHeightForWidth())
+        self.refreshBtn.setSizePolicy(sizePolicy1)
+        font = QFont()
+        font.setFamilies([u"Wingdings 3"])
+        self.refreshBtn.setFont(font)
+
+        self.horizontalLayout_5.addWidget(self.refreshBtn)
+
+        self.searchBar_2 = QLineEdit(self.toolBar)
+        self.searchBar_2.setObjectName(u"searchBar_2")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.searchBar_2.sizePolicy().hasHeightForWidth())
+        self.searchBar_2.setSizePolicy(sizePolicy2)
+
+        self.horizontalLayout_5.addWidget(self.searchBar_2)
+
+        self.horizontalLayout_4.addWidget(self.toolBar)
+
+        self.stackedWidget.addWidget(self.PaymentPage)
+        #endregion
+        #endregion
+        
+        #Connections
+        self.occupancyBtn.clicked.connect(lambda : self.switchToOccupanyLevels())
+        self.collectionBtn.clicked.connect(lambda : self.switchToCollectionRate())
+        self.maintenanceBtn.clicked.connect(lambda : self.switchToMaintenance())
+        self.invoicesBtn.clicked.connect(lambda : self.switchToInvoices())
+        self.paymentsBtn.clicked.connect(lambda : self.switchToPayments())
+        self.reportBtn.clicked.connect(lambda : self.switchToReport())
+
+        self.stackedWidget.setCurrentIndex(2)
+        self.retranslateUi()
+    # setupUi
+
+    def retranslateUi(self):
+        self.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
+        self.label.setText(QCoreApplication.translate("Form", u"Finance Dashboard", None))
+        self.occupancyBtn.setText(QCoreApplication.translate("Form", u"Occupancy Levels", None))
+        self.collectionBtn.setText(QCoreApplication.translate("Form", u"Collection Rate", None))
+        self.maintenanceBtn.setText(QCoreApplication.translate("Form", u"Maintenance", None))
+        self.invoiceTitle.setText(QCoreApplication.translate("Form", u"Issue Invoices", None))
+        self.managePayments.setTitle("")
+        self.title.setText(QCoreApplication.translate("Form", u"Payments", None))
+        self.latePaymentsBtn.setText(QCoreApplication.translate("Form", u"Late Payments", None))
+        self.refreshBtn.setText(QCoreApplication.translate("Form", u"P", None))
+        self.searchBar_2.setPlaceholderText(QCoreApplication.translate("Form", u"Search", None))
+        self.paymentsBtn.setText(QCoreApplication.translate("Form", u"Payments", None))
+        self.invoicesBtn.setText(QCoreApplication.translate("Form", u"Invoices", None))
+        self.reportBtn.setText(QCoreApplication.translate("Form", u"Report", None))
+    # retranslateUi
+    def switchToOccupanyLevels(self):
+        self.graphsStackedWidget.setCurrentIndex(0)
+
+    def switchToCollectionRate(self):
+        self.graphsStackedWidget.setCurrentIndex(2)
+
+    def switchToMaintenance(self):
+        self.graphsStackedWidget.setCurrentIndex(1)
+
+    def CreateOccupancyLevels(self, pie :PieChart):
+        self.Occupancy.setChart(pie.chart())
+        self.Occupancy.setGeometry(QRect(10, 60, 391, 291))
+        self.Occupancy.setParent(self.graphsStackedWidget)
+        print("Created Occupancy Pie")
+
+    def CreateCollectionRates(self, pie :PieChart):
+        self.CollectionRate.setChart(pie.chart())
+        self.CollectionRate.setGeometry(QRect(10, 60, 391, 291))
+        self.CollectionRate.setParent(self.graphsStackedWidget)
+        print("Created Collection Pie")
+
+    def CreateMaintenance(self, pie :PieChart):
+        self.MaintenceCost.setChart(pie.chart())
+        self.MaintenceCost.setGeometry(QRect(10, 60, 391, 291))
+        self.MaintenceCost.setParent(self.graphsStackedWidget)
+        print("Created Maintenence Pie")
+
+
+    def switchToInvoices(self):
+        self.stackedWidget.setCurrentIndex(1)
+    def switchToPayments(self):
+        self.stackedWidget.setCurrentIndex(2)
+    def switchToReport(self):
+        self.stackedWidget.setCurrentIndex(0)
+
+#endregion
+
+# class FinanceDashboard(QWidget):
+#     def __init__(self):
+#         super().__init__()
+
+#         self.resize(831, 581)
+#         self.Graphs = QFrame(self)
+#         self.Graphs.setObjectName(u"Graphs")
+#         self.Graphs.setGeometry(QRect(200, 100, 411, 361))
+#         self.Graphs.setFrameShape(QFrame.Shape.StyledPanel)
+#         self.Graphs.setFrameShadow(QFrame.Shadow.Raised)
+
+
+
+#         self.stackedWidget = QStackedWidget(self.Graphs)
+#         self.stackedWidget.setObjectName(u"stackedWidget")
+#         self.stackedWidget.setGeometry(QRect(10, 60, 391, 291))
+
+#         #Occupancy Chart
+#         self.Occupancy = PieChart((),(),"")
+#         self.Occupancy.setObjectName(u"Occupancy")
+#         self.Occupancy.setParent(self.stackedWidget)
+#         self.stackedWidget.addWidget(self.Occupancy)
+        
+        
+#         #Collection Rate Chart
+#         self.CollectionRate = PieChart((),(),"")
+#         self.CollectionRate.setObjectName(u"CollectionRate")
+#         self.CollectionRate.setParent(self.stackedWidget)
+#         self.stackedWidget.addWidget(self.CollectionRate)
+
+
+
+#         self.MaintenceCost = PieChart((),(),"")
+#         self.MaintenceCost.setObjectName(u"MaintenceCost")
+#         self.MaintenceCost.setParent(self.stackedWidget)
+#         self.stackedWidget.addWidget(self.MaintenceCost)
+
+
+       
+
+
+#         #Button group
+#         self.btnGroup = QFrame(self.Graphs)
+#         self.btnGroup.setObjectName(u"btnGroup")
+#         self.btnGroup.setGeometry(QRect(10, 10, 391, 48))
+#         self.btnGroup.setFrameShape(QFrame.Shape.StyledPanel)
+#         self.btnGroup.setFrameShadow(QFrame.Shadow.Raised)
+#         self.horizontalLayout = QHBoxLayout(self.btnGroup)
+#         self.horizontalLayout.setObjectName(u"horizontalLayout")
+
+
+#         #Occupany Level Btn
+#         self.occupancyBtn = QPushButton(self.btnGroup)
+#         self.occupancyBtn.setObjectName(u"occupancyBtn")
+#         self.horizontalLayout.addWidget(self.occupancyBtn)
+#         self.occupancyBtn.clicked.connect(lambda : self.switchToOccupanyLevels())
+
+
+#         #Collection Rate Btn
+#         self.collectionBtn = QPushButton(self.btnGroup)
+#         self.collectionBtn.setObjectName(u"collectionBtn")
+#         self.collectionBtn.setDisabled(True)
+#         self.horizontalLayout.addWidget(self.collectionBtn)
+#         self.collectionBtn.clicked.connect(lambda : self.switchToCollectionRate())
+
+#         #Maintenance Btn
+#         self.maintenanceBtn = QPushButton(self.btnGroup)
+#         self.maintenanceBtn.setObjectName(u"maintenanceBtn")
+#         self.horizontalLayout.addWidget(self.maintenanceBtn)
+#         self.maintenanceBtn.clicked.connect(lambda : self.switchToMaintenance())
+
+
+#         self.retranslateUi()
+
+#     # setupUi
+
+#     def retranslateUi(self):
+#         self.setWindowTitle(QCoreApplication.translate("FinanceDashboard", u"Form", None))
+#         self.occupancyBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Occupancy Levels", None))
+#         self.collectionBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Collection Rate", None))
+#         self.maintenanceBtn.setText(QCoreApplication.translate("FinanceDashboard", u"Maintenence", None))
+#     # retranslateUi
+
+#     def switchToOccupanyLevels(self):
+#         self.stackedWidget.setCurrentIndex(0)
+
+#     def switchToCollectionRate(self):
+#         self.stackedWidget.setCurrentIndex(1)
+
+#     def switchToMaintenance(self):
+#         self.stackedWidget.setCurrentIndex(2)
+
+#     def CreateOccupancyLevels(self, pie :PieChart):
+#         self.Occupancy.setChart(pie.chart())
+#         self.Occupancy.setGeometry(QRect(10, 60, 391, 291))
+#         self.Occupancy.setParent(self.stackedWidget)
+#         print("Created Occupancy Pie")
+
+#     def CreateCollectionRates(self, pie :PieChart):
+#         self.CollectionRate.setChart(pie.chart())
+#         self.CollectionRate.setGeometry(QRect(10, 60, 391, 291))
+#         self.CollectionRate.setParent(self.stackedWidget)
+#         print("Created Collection Pie")
+
+#     def CreateMaintenance(self, pie :PieChart):
+#         self.MaintenceCost.setChart(pie.chart())
+#         self.MaintenceCost.setGeometry(QRect(10, 60, 391, 291))
+#         self.MaintenceCost.setParent(self.stackedWidget)
+#         print("Created Maintenence Pie")
+    
+
+
+
+
+
+    # Graph Page
+
+    #     self.GraphPage = QFrame(self.stackedWidget)
+    #     self.GraphPage.setObjectName(u"GraphPage")
+    #     self.GraphPage.setGeometry(QRect(180, 50, 411, 361))
+    #     self.GraphPage.setFrameShape(QFrame.Shape.StyledPanel)
+    #     self.GraphPage.setFrameShadow(QFrame.Shadow.Raised)
+
+    #     self.graphsStackedWidget = QStackedWidget(self.GraphPage)
+    #     self.graphsStackedWidget.setObjectName(u"graphsStackedWidget")
+    #     self.graphsStackedWidget.setGeometry(QRect(180, 50, 411, 361))
+        
+    #     Occupancy Chart
+    #     self.Occupancy = PieChart((),(),"")
+    #     self.Occupancy.setObjectName(u"Occupancy")
+    #     self.Occupancy.setParent(self.graphsStackedWidget)
+    #     self.graphsStackedWidget.addWidget(self.Occupancy)
+
+    #     Maintenance Cost Chart
+    #     self.MaintenceCost = PieChart((),(),"")
+    #     self.MaintenceCost.setObjectName(u"MaintenceCost")
+    #     self.MaintenceCost.setParent(self.graphsStackedWidget)
+    #     self.graphsStackedWidget.addWidget(self.MaintenceCost)
+
+    #     Collection Rate Chart
+    #     self.CollectionRate = PieChart((),(),"")
+    #     self.CollectionRate.setObjectName(u"CollectionRate")
+    #     self.CollectionRate.setParent(self.graphsStackedWidget)
+    #     self.graphsStackedWidget.addWidget(self.CollectionRate)
+
+    #     Buttons
+    #     TODO ADD LINE FOR MAINTENENCE COSTS PER MONTH/ WEEK/ YEAR
+    #     TODO IMPLEMENT COLLECTION RATE CHART
+    #     self.btnGroup = QFrame(self.GraphPage)
+    #     self.btnGroup.setObjectName(u"btnGroup")
+    #     self.btnGroup.setGeometry(QRect(10, 10, 391, 44))
+    #     self.btnGroup.setFrameShape(QFrame.Shape.StyledPanel)
+    #     self.btnGroup.setFrameShadow(QFrame.Shadow.Raised)
+
+    #     self.horizontalLayout = QHBoxLayout(self.btnGroup)
+    #     self.horizontalLayout.setObjectName(u"horizontalLayout")
+
+
+    #     Occupany Level Btn
+    #     self.occupancyBtn = QPushButton(self.btnGroup)
+    #     self.occupancyBtn.setObjectName(u"occupancyBtn")
+    #     self.horizontalLayout.addWidget(self.occupancyBtn)
+
+    #     Collection Rate Btn
+    #     self.collectionBtn = QPushButton(self.btnGroup)
+    #     self.collectionBtn.setObjectName(u"collectionBtn")
+    #     self.collectionBtn.setDisabled(True)
+    #     self.horizontalLayout.addWidget(self.collectionBtn)
+
+    #     Maintenance Btn
+    #     self.maintenanceBtn = QPushButton(self.btnGroup)
+    #     self.maintenanceBtn.setObjectName(u"maintenanceBtn")
+    #     self.horizontalLayout.addWidget(self.maintenanceBtn)
+
+       

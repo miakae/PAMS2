@@ -78,6 +78,11 @@ class Ui_MainWindow(object):
         self.stackedView.addWidget(self.FrontDeskDash)
         #endregion
         
+        #region Page 9 Finance Dashboard
+        self.FinanceDash = FinanceDashboard()
+        self.stackedView.addWidget(self.FinanceDash)
+        #endregion
+        
         MainWindow.setCentralWidget(self.View)
 
         self.retranslateUi(MainWindow)
