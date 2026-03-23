@@ -4,9 +4,9 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
 from PySide6.QtCharts import *
-from ErrorBoxes import ErrorBox
-from Entities import *
-from tenantPage import *
+from components.ErrorBoxes import ErrorBox
+from models.Entities import *
+from components.tenantPage import *
 
 #region Fonts
 
@@ -478,9 +478,13 @@ class TenantDashboard(QWidget):
         self.paymentsBtn.setObjectName(u"paymentsBtn")
         self.horizontalLayout.addWidget(self.paymentsBtn)
 
-        self.maintanenceBtn = QPushButton(self.tabSection)
-        self.maintanenceBtn.setObjectName(u"maintanenceBtn")
-        self.horizontalLayout.addWidget(self.maintanenceBtn)
+        self.maintenanceBtn = QPushButton(self.tabSection)
+        self.maintenanceBtn.setObjectName(u"maintenanceBtn")
+        self.horizontalLayout.addWidget(self.maintenanceBtn)
+
+        self.notifcationsBtn = QPushButton(self.tabSection)
+        self.notifcationsBtn.setObjectName(u"notificationsBtn")
+        self.horizontalLayout.addWidget(self.notifcationsBtn)
 
         self.horizontalSpacer = QSpacerItem(533, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.horizontalLayout.addItem(self.horizontalSpacer)
@@ -499,6 +503,9 @@ class TenantDashboard(QWidget):
                 
         self.paymentsPage = TenantPaymentsPage()
         self.mainSection.addWidget(self.paymentsPage)
+
+        self.notificationsPage = TenantNotificationsDashboard()
+        self.mainSection.addWidget(self.notificationsPage)
     
 
         self.verticalLayout_2.addWidget(self.mainSection)
@@ -507,6 +514,8 @@ class TenantDashboard(QWidget):
 
         self.overviewBtn.clicked.connect(lambda: self.switchToOverviewPage())
         self.paymentsBtn.clicked.connect(lambda: self.switchToPaymentsPage())
+        self.maintenanceBtn.clicked.connect(lambda: self.switchToMaintenancePage())
+        self.notifcationsBtn.clicked.connect(lambda: self.switchToNotificationsPage())
 
         self.mainSection.setCurrentIndex(0)
         self.retranslateUi()
@@ -518,10 +527,11 @@ class TenantDashboard(QWidget):
         self.title.setText(QCoreApplication.translate("Form", u"Tenant Dashboard", None))
         self.overviewBtn.setText(QCoreApplication.translate("Form", u"Overview", None))
         self.paymentsBtn.setText(QCoreApplication.translate("Form", u"Payments", None))
-        self.maintanenceBtn.setText(QCoreApplication.translate("Form", u"Maintanence", None))
+        self.maintenanceBtn.setText(QCoreApplication.translate("Form", u"Maintenance", None))
+        self.notifcationsBtn.setText(QCoreApplication.translate("Form", u"Notifications", None))
         self.OverviewPage.retranslateUi()
         self.paymentsPage.retranslateUi()
-       
+        self.notificationsPage.retranslateUi()       
     # retranslateUi
 
     def setUser(self, tenant : Tenant):
@@ -534,6 +544,10 @@ class TenantDashboard(QWidget):
         self.mainSection.setCurrentIndex(1)
     def switchToOverviewPage(self):
         self.mainSection.setCurrentIndex(0)
+    def switchToMaintenancePage(self):
+        self.mainSection.setCurrentIndex(0)
+    def switchToNotificationsPage(self):
+        self.mainSection.setCurrentWidget(self.notificationsPage)
         
 
 #endregion

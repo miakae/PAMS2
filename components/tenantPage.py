@@ -4,8 +4,9 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
 from PySide6.QtCharts import *
-from ErrorBoxes import ErrorBox
-from Entities import *
+from components.ErrorBoxes import ErrorBox
+from models.Entities import *
+import controllers.inboxController as inboxController
 
 class TenantOverviewPage(QWidget):
     def __init__(self):
@@ -193,3 +194,90 @@ class TenantPaymentsPage(QWidget):
         self.horizontalLayout_6.addWidget(self.pageSection)
     def retranslateUi(self):
         self.paymentLabel.setText(QCoreApplication.translate("Form", u"Previous Rent Payments", None))
+
+#region Notifications Dashboard
+
+class TenantNotificationsDashboard(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("NotificationsDashboard")
+        self.resize(831, 487)
+
+        self.controller = None
+        self.currentTenant = None
+
+        # Inbox List
+        self.previewList = QScrollArea(self)
+        self.previewList.setGeometry(QRect(20, 90, 171, 381))
+        self.previewList.setWidgetResizable(True)
+
+        self.inbox = QWidget()
+        self.inboxLayout = QVBoxLayout(self.inbox)
+        self.inboxLayout.setContentsMargins(5, 5, 5, 5)
+        self.inboxLayout.setSpacing(5)
+        self.inboxLayout.addStretch()  # keeps items at top
+        self.previewList.setWidget(self.inbox)
+
+        # Message View
+        self.expandedMessage = QScrollArea(self)
+        self.expandedMessage.setGeometry(QRect(220, 90, 581, 381))
+        self.expandedMessage.setWidgetResizable(True)
+
+        self.message = QWidget()
+        self.messageLayout = QVBoxLayout(self.message)
+        self.messageLayout.setContentsMargins(10, 10, 10, 10)
+
+        self.messageBody = QLabel("")
+        self.messageBody.setWordWrap(True)
+        self.messageLayout.addWidget(self.messageBody)
+
+        self.expandedMessage.setWidget(self.message)
+
+        # Header
+        self.header = QGroupBox(self)
+        self.header.setGeometry(QRect(20, 0, 781, 80))
+
+        self.personal = QCheckBox(self.header)
+        self.personal.setGeometry(QRect(90, 50, 85, 20))
+        self.personal.setText("Personal")
+
+        self.public = QCheckBox(self.header)
+        self.public.setGeometry(QRect(10, 50, 85, 20))
+        self.public.setText("Public")
+
+        self.label = QLabel(self.header)
+        self.label.setGeometry(QRect(10, 10, 200, 31))
+        font = QFont()
+        font.setPointSize(23)
+        font.setBold(True)
+        self.label.setFont(font)
+        self.label.setText("Your Inbox")
+
+        self.subject = QLabel(self.header)
+        self.subject.setGeometry(QRect(200, 50, 511, 20))
+        font1 = QFont()
+        font1.setPointSize(19)
+        font1.setBold(True)
+        self.subject.setFont(font1)
+        self.subject.setText("Message Subject")
+
+        self.setWindowTitle(
+            QCoreApplication.translate(
+                "NotificationsDashboard", "Notifications", None
+            )
+        )
+
+        QMetaObject.connectSlotsByName(self)
+    def retranslateUi(self):
+        self.setWindowTitle(QCoreApplication.translate("NotificationsDashboard", "Notifications", None))
+        self.personal.setText(QCoreApplication.translate("NotificationsDashboard", "Personal", None))
+        self.public.setText(QCoreApplication.translate("NotificationsDashboard", "Public", None))
+        self.label.setText(QCoreApplication.translate("NotificationsDashboard", "Your Inbox", None))
+        self.subject.setText(QCoreApplication.translate("NotificationsDashboard", "Message Subject", None))
+    
+    def setTenant(self, tenant: Tenant):
+        self.currentTenant = tenant
+        if self.controller is None:
+            self.controller = inboxController.InboxController(self, tenant.id, '1')
+
+#endregion

@@ -1,13 +1,11 @@
-import sys
-import random
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import * 
-from uiMainWindow import Ui_MainWindow
+from components.uiMainWindow import Ui_MainWindow
 from db import *
-from ErrorBoxes import *
-from MyWidgets import *
-from Entities import Tenant
+from components.ErrorBoxes import *
+from components.MyWidgets import *
+from models.Entities import Tenant
 
 class mainScreen(QMainWindow , Ui_MainWindow):
     def __init__(self):
@@ -18,6 +16,7 @@ class mainScreen(QMainWindow , Ui_MainWindow):
     #region Testing Section
     #This section is used test functionality, quick testing and debugging. 
         #self.switchToFinanceDashboard()
+        self.switchCustomerView(tenant=Tenant("5","","","", "", "", "", "",""))
         #Testing Page
         self.TestingPage.testBtn1.clicked.connect(lambda : self.MakePieChartUnoccupied("Madrid"))
         self.TestingPage.testBtn2.clicked.connect(lambda : self.MakePieChartUnoccupied("London"))
@@ -80,9 +79,9 @@ class mainScreen(QMainWindow , Ui_MainWindow):
     
     def switchCustomerView(self, tenant : Tenant):
         #Change when page is implemented to customer dashboard
-        self.stackedView.setCurrentIndex(3)
+        self.stackedView.setCurrentWidget(self.CustDash)
         self.CustDash.setUser(tenant)
-
+        self.CustDash.notificationsPage.setTenant(tenant)
     
     def switchAdminView(self, admin : User):
         #Change when page is implemented to customer dashboard
