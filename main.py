@@ -2,7 +2,7 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import * 
 from components.uiMainWindow import Ui_MainWindow
-from db import *
+from database.db import *
 from components.ErrorBoxes import *
 from components.MyWidgets import *
 from models.Entities import Tenant
