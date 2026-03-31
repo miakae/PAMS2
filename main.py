@@ -1,14 +1,11 @@
-import sys
-import random
-from wsgiref import headers
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import * 
-from uiMainWindow import Ui_MainWindow
-from db import *
-from ErrorBoxes import *
-from MyWidgets import *
-from Entities import Tenant
+from components.uiMainWindow import Ui_MainWindow
+from database.db import *
+from components.ErrorBoxes import *
+from components.MyWidgets import *
+from models.Entities import Tenant
 
 class mainScreen(QMainWindow , Ui_MainWindow):
     def __init__(self):
@@ -18,9 +15,8 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         self.setMaximumSize(self.size())
     #region Testing Section
     #This section is used test functionality, quick testing and debugging. 
-        #self.switchTestingPage()
-
         #self.switchToFinanceDashboard()
+        self.switchCustomerView(tenant=Tenant("5","","","", "", "", "", "",""))
         #Testing Page
         self.TestingPage.testBtn1.clicked.connect(lambda : self.MakePieChartUnoccupied("Madrid"))
         self.TestingPage.testBtn2.clicked.connect(lambda : self.MakePieChartUnoccupied("London"))
@@ -36,20 +32,33 @@ class mainScreen(QMainWindow , Ui_MainWindow):
         self.Welcome.loginCustomerBtn.clicked.connect(lambda : self.switchCustomerLoginPage())
         self.Welcome.loginAdminBtn.clicked.connect(lambda : self.switchAdminLoginPage())
 
-        #Customer Page
-
+        #Customer login page
         self.CustLogin.loginBtn.clicked.connect(lambda : self.LoginTenantBTN(self.CustLogin.emailInput.toPlainText(),self.CustLogin.passwordInput.toPlainText()))
-        self.AdminLogin.loginBtn.clicked.connect(lambda : self.switchToFinanceDashboard())
 
         self.CustLogin.signUpBtn.clicked.connect(lambda : self.switchCustomerSignUp())
         self.CustSignUp.submitBtn.clicked.connect(lambda : self.SignUpUser(self.CustSignUp.emailInput.toPlainText()))
 
-        
+        #Staff LoginPage
+        self.StaffLogin.loginBtn.clicked.connect(lambda : self.loginStaffMember(self.StaffLogin.emailInput.toPlainText(), self.StaffLogin.passwordInput.toPlainText()))
 
         #Front Desk Page
-        self.FrontDeskDash.submitButton.clicked.connect(lambda : self.RegisterTenant(self.FrontDeskDash.Submit()))
-#endregion
+        #self.FrontDeskDash.submitButton.clicked.connect(lambda : self.RegisterTenant(self.FrontDeskDash.Submit()))
+        #endregion
 
+        #Admin Dashboard
+        self.AdminDash.userLocationDropdown.currentIndexChanged.connect(lambda : self.AdminDash.CreateUserTable(GetUsersFromLocation(self.AdminDash.userLocationDropdown.currentText()),GetHeaders("users"),[], []))
+        self.AdminDash.userRefreshBtn.clicked.connect(lambda : self.AdminDash.CreateUserTable(GetUsersFromLocation(self.AdminDash.userLocationDropdown.currentText()),GetHeaders("users"),[], []))
+        self.AdminDash.apartmentLocationDropdown.currentIndexChanged.connect(lambda : self.AdminDash.CreateApartmentTable(GetApartmentsFromLocation(GetLocation(self.AdminDash.apartmentLocationDropdown.currentText()).GetID()), GetHeaders("apartments")))
+        self.AdminDash.apartmentRefresh.clicked.connect(lambda : self.AdminDash.CreateApartmentTable(GetApartmentsFromLocation(GetLocation(self.AdminDash.apartmentLocationDropdown.currentText()).GetID()), GetHeaders("apartments")))
+        self.AdminDash.reportLocationDropdown.currentIndexChanged.connect(lambda : [self.AdminDash.CreateOccupancyLevels(self.MakePieChartUnoccupied(self.AdminDash.reportLocationDropdown.currentText())), self.AdminDash.CreateMaintenance(self.MakeMaintanenceRequestsPieChart(self.AdminDash.reportLocationDropdown.currentText()))]) #TODO Create a function that updates both graphs at the same time
+        
+        #Sign Up Customer Page
+        self.DetailedSignUp.submitBtn.clicked.connect(lambda : SignUpTenant(Tenant("", self.DetailedSignUp.firstNameInput.text(),self.DetailedSignUp.lastNameInput.text(),self.DetailedSignUp.nationalNumInput.text(),self.DetailedSignUp.emailInput.text(),self.DetailedSignUp.passwordInput.text(),self.DetailedSignUp.phoneNumInput.text(),self.DetailedSignUp.occupationComboBox.currentText(),"")))
+        self.DetailedSignUp.submitBtn.clicked.connect(lambda : self.switchCustomerView(Tenant("", self.DetailedSignUp.firstNameInput.text(),self.DetailedSignUp.lastNameInput.text(),self.DetailedSignUp.nationalNumInput.text(),self.DetailedSignUp.emailInput.text(),self.DetailedSignUp.passwordInput.text(),self.DetailedSignUp.phoneNumInput.text(),self.DetailedSignUp.occupationComboBox.currentText(),"")))
+
+        #Customer Page
+
+        self.CustDash.OverviewPage.logoutBtn.clicked.connect(lambda : self.logoutTenant())
 #region Page Functions
 # This section is responsible for the functions that switch the pages and that load the data into these pages.
     def switchWelcomePage(self):
@@ -61,33 +70,50 @@ class mainScreen(QMainWindow , Ui_MainWindow):
     def switchAdminLoginPage(self):
         self.stackedView.setCurrentIndex(2)
     
-    def switchCustomerView(self):
-        #Change when page is implemented to customer dashboard
-        self.stackedView.setCurrentIndex(3)
-
-    def switchAdminView(self):
-        #Change when page is implemented to customer dashboard
-        self.switchWelcomePage()
-    
     def switchCustomerSignUp(self):
         self.stackedView.setCurrentIndex(4)
 
-
-    def switchTestingPage(self):
-        self.stackedView.setCurrentIndex(5)
-    
     def switchCustomerSignUpDetailed(self, email : str):
         self.stackedView.setCurrentIndex(6)
         self.DetailedSignUp.emailInput.setText(email)
     
-    def switchFrontDeskDashboard(self):
+    def switchCustomerView(self, tenant : Tenant):
+        #Change when page is implemented to customer dashboard
+        self.stackedView.setCurrentWidget(self.CustDash)
+        self.CustDash.setUser(tenant)
+        self.CustDash.notificationsPage.setTenant(tenant)
+    
+    def switchAdminView(self, admin : User):
+        #Change when page is implemented to customer dashboard
+        self.stackedView.setCurrentIndex(9)
+        self.AdminDash.setUser(admin)
+        self.setWindowTitle(admin.firstName)
+        self.AdminDash.GetLocations(GetLocations())
+
+        self.AdminDash.CreateOccupancyLevels(self.MakePieChartUnoccupied(self.AdminDash.apartmentLocationDropdown.currentText())) #TODO add a dropdown for the reports page for locations
+        self.AdminDash.CreateMaintenance(self.MakeMaintanenceRequestsPieChart(self.AdminDash.apartmentLocationDropdown.currentText())) 
+        self.AdminDash.CreateUserTable(GetUsersFromLocation(self.AdminDash.userLocationDropdown.currentText()),GetHeaders("users"),[], []) 
+        self.AdminDash.CreateApartmentTable(GetApartmentsFromLocation(GetLocation(self.AdminDash.apartmentLocationDropdown.currentText()).GetID()), GetHeaders("apartments"))
+    
+    
+    def switchFrontDeskDashboard(self , frontDesk: User):
         self.stackedView.setCurrentIndex(7)
+        self.FrontDeskDash.setUser(frontDesk)
+        self.setWindowTitle(frontDesk.firstName)
         self.FrontDeskDash.tenantTable.UpdateTable(GetTenants(), GetHeaders("tenants"))
-        self.FrontDeskDash.searchBar.textChanged.connect(lambda : self.FrontDeskDash.tenantTable.search(self.FrontDeskDash.searchBar.text()))
-    def switchToFinanceDashboard(self):
+
+    
+    def switchToFinanceDashboard(self, finance : User):
         self.stackedView.setCurrentIndex(8)
+        self.FinanceDash.setUser(finance)
+        self.setWindowTitle(finance.firstName)
+        self.FinanceDash.paymentTable.UpdateTable((),())
         self.FinanceDash.CreateOccupancyLevels(self.MakePieChartUnoccupied("London")) # Add specifc location for the user
         self.FinanceDash.CreateMaintenance(self.MakeMaintanenceRequestsPieChart("London")) # Add specifc location for the user
+
+    def switchTestingPage(self):
+        self.stackedView.setCurrentIndex(5)
+
 #endregion
 
 #region Interaction Functions
@@ -119,16 +145,47 @@ class mainScreen(QMainWindow , Ui_MainWindow):
             self.errorBox = ErrorBox(error)
             self.errorBox.show()
         else: 
-            SignUpUser(tenant)
+            SignUpTenant(tenant)
             self.switchFrontDeskDashboard()
 
-    # Not functioning 
     def LoginTenantBTN(self, email: str, password : str):
-        user = LoginUser(email,password)
+        tenant = LoginTenant(email,password)
 
-        if user is None:
+        if tenant is None:
             self.errorBox = ErrorBox(ErrorMessage("No User Found", "The credentials do not match any known user"))
             self.errorBox.show()
+        else:
+            self.CustLogin.retranslateUi() # removes  the values input into the page
+            self.switchCustomerView(tenant)
+
+    def loginStaffMember(self, email : str, password : str):
+        staff = LoginUser(email,password)
+
+        if staff is None:
+            self.errorBox = ErrorBox(ErrorMessage("No User Found", "The credentials do not match any known user"))
+            self.errorBox.show()
+        else:
+            self.StaffLogin.retranslateUi() #removes the values stored
+            match(staff.role):
+                case "FrontDesk":
+                    self.switchFrontDeskDashboard(staff)
+                case "Manager":
+                    #Implement manager
+                    self.switchWelcomePage()
+                case "Finance":
+                    self.switchToFinanceDashboard(staff)
+                case "Maintenance":
+                    self.switchWelcomePage()
+                case "Admin":
+                    self.switchAdminView(staff)
+                
+                case _: 
+                    self.errorBox = ErrorBox(ErrorMessage("Role Error", "Something went wrong, please contact your administrator"))
+                    self.errorBox.show()
+    def logoutTenant(self):
+        self.CustDash.setUser(Tenant("","","", "", "", "", "", "",""))
+        self.switchWelcomePage()
+
 
     # Returns a table with all tenants in the database
     def getTenantsTable(self):
@@ -177,6 +234,8 @@ class mainScreen(QMainWindow , Ui_MainWindow):
             pie = PieChart(labels= ("Repairs In Progress", "Functional"),numData= ((len(requests)), len(apartments) - len(requests)) ,title= "Repairs in progress vs functional rooms")
             return pie
         print("Done")
+
+
 #endregion
 
 #region App
